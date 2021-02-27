@@ -39,10 +39,15 @@ const StyleProvider: React.FC<Props> = props => {
       );
     }
 
-    // return styleNames.map((v) => ({
-    //   ...styles[`${v}`],
-    //   ..._mediaStyles[`${v}`],
-    // }));
+    return {};
+
+    // return StyleSheet.flatten(
+    //   [],
+    //   // styleNames.map(v => ({
+    //   //   ...styles[`${v}`],
+    //   //   //   ..._mediaStyles[`${v}`],
+    //   // })),
+    // );
   };
 
   return (
