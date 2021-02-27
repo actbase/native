@@ -30,7 +30,7 @@
     "url": "git://github.com/actbase/native.git"
   },
   "dependencies": {
-    "immer": "^7.*",
+    "immer": ">=8.0.1",
     "lodash": "^4.*"
   },
   "peerDependencies": {
