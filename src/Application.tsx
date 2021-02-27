@@ -3,7 +3,11 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import AbsoluteProvider from './absolute/provider';
 import { StyleProp, ViewStyle } from 'react-native';
 
-export const Application = (props: { children?: React.ReactNode; style?: StyleProp<ViewStyle> }) => {
+interface Props {
+  style?: StyleProp<ViewStyle>;
+}
+
+export const Application: React.FC<Props> = props => {
   const children: React.ReactNode[] = React.Children.toArray(props.children);
   const providerGroup: React.ReactNode = children?.find((el: any): el is React.ReactElement => {
     return el.type?.__NAME === Providers?.__NAME;

@@ -17,7 +17,5 @@ export type DimenStyles = {
 
 export const StyleContext = React.createContext<{
   getStyle?: any;
-  styles?: NamedStyles | NamedStyles[] | DimenStyles | DimenStyles[];
-}>({
-  styles: {},
-});
+  styles?: DimenStyles[];
+}>({});
