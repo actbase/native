@@ -1,17 +1,17 @@
 import React from 'react';
 import { ImageStyle, TextStyle, ViewStyle } from 'react-native';
 
-export type NamedStyles = { [key: string]: ViewStyle | TextStyle | ImageStyle };
+export type NamedStyles = {
+  [key: string]: (ViewStyle | TextStyle | ImageStyle) | (ViewStyle | TextStyle | ImageStyle)[];
+};
 export type DimenStyles = {
-  style: {
-    [key: string]: ViewStyle | TextStyle | ImageStyle;
-  };
+  style: NamedStyles;
   condition?: {
     minWidth?: number;
     maxWidth?: number;
     minHeight?: number;
     maxHeight?: number;
-    orientation?: 'portrait' | 'horizontal';
+    orientation?: 'portrait' | 'landscape';
   };
 };
 

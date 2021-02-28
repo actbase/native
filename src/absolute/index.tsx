@@ -10,8 +10,9 @@ const Absolute: React.FC<AbsoluteProps> = props => {
     if (attach && isVisible) {
       attach(serial, { children, left, top, isVisible });
       return () => attach(serial, undefined);
+    } else {
+      return () => null;
     }
-    return () => null;
   }, [serial, attach, children, left, top, isVisible]);
   return null;
 };
@@ -20,4 +21,4 @@ Absolute.defaultProps = {
   isVisible: true,
 };
 
-export default React.memo(Absolute);
+export default Absolute;

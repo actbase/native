@@ -1,13 +1,14 @@
 import React, { PropsWithChildren, useCallback, useState } from 'react';
 import { AbsoluteProps, AbsoluteContext } from './context';
 import produce from 'immer';
-import { StyleProp, View, ViewStyle } from 'react-native';
+import { LayoutRectangle, StyleProp, View, ViewStyle } from 'react-native';
 
 interface Props {
   style?: StyleProp<ViewStyle>;
 }
 
 const AbsoluteProvider: React.FC<Props> = props => {
+  const [dimensions, setDimensions] = React.useState<LayoutRectangle | undefined>();
   const [screens, setScreens] = useState<{ [key: string]: PropsWithChildren<AbsoluteProps> }>({});
   const attach = useCallback((target: string, props: PropsWithChildren<AbsoluteProps> | undefined) => {
     setScreens(
@@ -18,8 +19,8 @@ const AbsoluteProvider: React.FC<Props> = props => {
   }, []);
 
   return (
-    <View style={props.style}>
-      <AbsoluteContext.Provider value={{ attach }}>{props.children}</AbsoluteContext.Provider>
+    <View style={props.style} onLayout={({ nativeEvent }) => setDimensions(nativeEvent?.layout)}>
+      <AbsoluteContext.Provider value={{ attach, dimensions }}>{props.children}</AbsoluteContext.Provider>
       {Object.keys(screens)
         .filter(v => !!screens[v])
         .map((key: string) => {

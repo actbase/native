@@ -1,11 +1,14 @@
 import React, { useMemo } from 'react';
 import { DimenStyles, NamedStyles, StyleContext } from './context';
+import { AbsoluteContext } from '../absolute/context';
+import { StyleSheet } from 'react-native';
 
 interface Props {
   styles?: NamedStyles | NamedStyles[] | DimenStyles | DimenStyles[];
 }
 
 const StyleProvider: React.FC<Props> = props => {
+  const absoluteContext = React.useContext(AbsoluteContext);
   const styleContext = React.useContext(StyleContext);
   const parentStyles = styleContext?.styles || [];
 
@@ -20,6 +23,32 @@ const StyleProvider: React.FC<Props> = props => {
   }, [props.styles]);
 
   const styles = [...parentStyles, ...innerStyles];
+  const styleMap = useMemo<NamedStyles>(() => {
+    const width = absoluteContext.dimensions?.width || 0;
+    const height = absoluteContext.dimensions?.height || 0;
+    const maps: NamedStyles = styles.reduce((x, y) => {
+      if (!y.condition) {
+        return { ...x, ...y.style };
+      } else {
+        const sMinWidth = y.condition.minWidth === undefined || y.condition.minWidth <= width;
+        const sMaxWidth = y.condition.maxWidth === undefined || y.condition.maxWidth >= width;
+        const sMinHeight = y.condition.minHeight === undefined || y.condition.minHeight <= height;
+        const sMaxHeight = y.condition.maxHeight === undefined || y.condition.maxHeight >= height;
+        if (sMinWidth && sMaxWidth && sMinHeight && sMaxHeight) {
+          return { ...x, ...y.style };
+        } else {
+          return x;
+        }
+      }
+    }, {});
+
+    // styles.filter(v => {
+    //   return !v.condition || v.condition.minWidth <
+    // })
+
+    return maps;
+  }, [styles, absoluteContext.dimensions]);
+
   const getStyle = (name: string = '', prefixes: string[] = []) => {
     if (!name && typeof name !== 'string') {
       return name;
@@ -39,15 +68,8 @@ const StyleProvider: React.FC<Props> = props => {
       );
     }
 
-    return {};
-
-    // return StyleSheet.flatten(
-    //   [],
-    //   // styleNames.map(v => ({
-    //   //   ...styles[`${v}`],
-    //   //   //   ..._mediaStyles[`${v}`],
-    //   // })),
-    // );
+    const flatten = StyleSheet.flatten(styleNames.map(v => styleMap[`${v}`]));
+    return flatten;
   };
 
   return (
