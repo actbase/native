@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text as RNText, TextProps } from 'react-native';
-import { NamedStyles } from '../styling/context';
+import { NamedStyles, StyleContext } from '../styling/context';
 
 interface TProps extends TextProps {
   className?: string;
@@ -9,7 +9,6 @@ interface TProps extends TextProps {
     invalid: string;
     checked: string;
   };
-  // style?: string | StyleProp<ViewStyle>;
   conditionStyle?: {
     focus: NamedStyles;
     invalid: NamedStyles;
@@ -18,7 +17,9 @@ interface TProps extends TextProps {
 }
 
 export const Text: React.FC<TProps> = props => {
-  return <RNText {...props} style={{}} />;
+  const styleContext = React.useContext(StyleContext);
+  const style = [styleContext.getStyle(props.className), props.style];
+  return <RNText {...props} style={style} />;
 };
 
-export default View;
+export default Text;

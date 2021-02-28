@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useRef } from 'react';
 import { AbsoluteProps, AbsoluteContext } from './context';
 import { uniqueId } from 'lodash';
 
-const Absolute: React.FC<AbsoluteProps> = props => {
+const Absolute: React.FC<AbsoluteProps> = (props) => {
   const serial = useRef(uniqueId()).current;
   const { attach } = useContext(AbsoluteContext);
   const { children, left, top, isVisible } = props;

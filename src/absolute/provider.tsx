@@ -7,12 +7,12 @@ interface Props {
   style?: StyleProp<ViewStyle>;
 }
 
-const AbsoluteProvider: React.FC<Props> = props => {
+const AbsoluteProvider: React.FC<Props> = (props) => {
   const [dimensions, setDimensions] = React.useState<LayoutRectangle | undefined>();
   const [screens, setScreens] = useState<{ [key: string]: PropsWithChildren<AbsoluteProps> }>({});
   const attach = useCallback((target: string, props: PropsWithChildren<AbsoluteProps> | undefined) => {
     setScreens(
-      produce(draft => {
+      produce((draft) => {
         draft[target] = props;
       }),
     );
@@ -22,7 +22,7 @@ const AbsoluteProvider: React.FC<Props> = props => {
     <View style={props.style} onLayout={({ nativeEvent }) => setDimensions(nativeEvent?.layout)}>
       <AbsoluteContext.Provider value={{ attach, dimensions }}>{props.children}</AbsoluteContext.Provider>
       {Object.keys(screens)
-        .filter(v => !!screens[v])
+        .filter((v) => !!screens[v])
         .map((key: string) => {
           const props = screens[key];
           return (

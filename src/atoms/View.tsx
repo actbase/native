@@ -1,6 +1,6 @@
 import React from 'react';
 import { View as RNView, ViewProps } from 'react-native';
-import { NamedStyles } from '../styling/context';
+import { NamedStyles, StyleContext } from '../styling/context';
 
 interface TProps extends ViewProps {
   className?: string;
@@ -9,7 +9,6 @@ interface TProps extends ViewProps {
     invalid: string;
     checked: string;
   };
-  // style?: string | StyleProp<ViewStyle>;
   conditionStyle?: {
     focus: NamedStyles;
     invalid: NamedStyles;
@@ -18,7 +17,9 @@ interface TProps extends ViewProps {
 }
 
 export const View: React.FC<TProps> = props => {
-  return <RNView {...props} style={{}} />;
+  const styleContext = React.useContext(StyleContext);
+  const style = [styleContext.getStyle(props.className), props.style];
+  return <RNView {...props} style={style} />;
 };
 
 export default View;

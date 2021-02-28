@@ -4,8 +4,13 @@ import { ImageStyle, TextStyle, ViewStyle } from 'react-native';
 export type NamedStyles = {
   [key: string]: (ViewStyle | TextStyle | ImageStyle) | (ViewStyle | TextStyle | ImageStyle)[];
 };
+
+export type DimenStyleItem = {
+  [key: string]: (ViewStyle | TextStyle | ImageStyle)[];
+};
+
 export type DimenStyles = {
-  style: NamedStyles;
+  style: DimenStyleItem;
   condition?: {
     minWidth?: number;
     maxWidth?: number;
