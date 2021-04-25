@@ -1,14 +1,14 @@
 import React, { useMemo } from 'react';
 import { DimenStyleItem, DimenStyles, NamedStyles, StyleContext } from './context';
-import { AbsoluteContext } from '../absolute/context';
 import { StyleSheet } from 'react-native';
+import { DimensionContext } from '../dimensions/context';
 
 interface Props {
   styles?: (NamedStyles | DimenStyles) | (NamedStyles | DimenStyles)[];
 }
 
-const StyleProvider: React.FC<Props> = (props) => {
-  const absoluteContext = React.useContext(AbsoluteContext);
+const StyleProvider: React.FC<Props> = props => {
+  const dimensionContext = React.useContext(DimensionContext);
   const styleContext = React.useContext(StyleContext);
   const parentStyles = styleContext?.styles || [];
 
@@ -39,8 +39,8 @@ const StyleProvider: React.FC<Props> = (props) => {
 
   const styles = [...parentStyles, ...innerStyles];
   const styleMap = useMemo<NamedStyles>(() => {
-    const width = absoluteContext.dimensions?.width || 0;
-    const height = absoluteContext.dimensions?.height || 0;
+    const width = dimensionContext.dimensions?.width || 0;
+    const height = dimensionContext.dimensions?.height || 0;
     const maps: NamedStyles = styles.reduce((x: DimenStyleItem, y) => {
       if (y.condition) {
         const sMinWidth = y.condition.minWidth === undefined || y.condition.minWidth <= width;
@@ -59,7 +59,7 @@ const StyleProvider: React.FC<Props> = (props) => {
       }, x);
     }, {});
     return maps;
-  }, [styles, absoluteContext.dimensions]);
+  }, [styles, dimensionContext.dimensions]);
 
   const getStyle = (name: string = '', prefixes: string[] = []) => {
     if (!name && typeof name !== 'string') {
@@ -80,7 +80,7 @@ const StyleProvider: React.FC<Props> = (props) => {
       );
     }
 
-    const flatten = StyleSheet.flatten(styleNames.map((v) => styleMap[`${v}`]));
+    const flatten = StyleSheet.flatten(styleNames.map(v => styleMap[`${v}`]));
     return flatten;
   };
 

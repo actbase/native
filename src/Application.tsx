@@ -1,7 +1,7 @@
 import React, { ReactElement, ReactNode } from 'react';
+import { StyleProp, View, ViewStyle } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import AbsoluteProvider from './absolute/provider';
-import { StyleProp, ViewStyle } from 'react-native';
+import { AbsoluteProvider } from '@actbase/react-absolute';
 
 interface Props {
   style?: StyleProp<ViewStyle>;
@@ -34,24 +34,25 @@ export const Application: React.FC<Props> = props => {
     return el;
   }, React.createElement(React.Fragment, null, []));
 
+  let output = undefined;
   if (exports) {
     let last: ReactElement = exports as ReactElement;
     while (last.props.children?.length > 0) {
       last = last.props.children?.[0];
     }
     last.props.children.push(...bodies);
-    return (
-      <SafeAreaProvider>
-        <AbsoluteProvider style={props.style}>{exports}</AbsoluteProvider>
-      </SafeAreaProvider>
-    );
+    output = exports;
   } else {
-    return (
-      <SafeAreaProvider>
-        <AbsoluteProvider style={props.style}>{bodies}</AbsoluteProvider>
-      </SafeAreaProvider>
-    );
+    output = bodies;
   }
+
+  return (
+    <SafeAreaProvider>
+      <View style={props.style}>
+        <AbsoluteProvider>{output}</AbsoluteProvider>
+      </View>
+    </SafeAreaProvider>
+  );
 };
 
 const _Providers = () => <></>;
