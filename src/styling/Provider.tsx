@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
-import { DimenStyleItem, DimenStyles, NamedStyles, StyleContext } from './context';
 import { StyleSheet } from 'react-native';
-import { DimensionContext } from '../dimensions/context';
+import { DimensionContext } from '../dimensions/Context';
+import { DimenStyleItem, DimenStyles, NamedStyles, StyleContext } from './Context';
 
 interface Props {
   styles?: (NamedStyles | DimenStyles) | (NamedStyles | DimenStyles)[];
