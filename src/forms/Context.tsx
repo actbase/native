@@ -1,9 +1,10 @@
 import React, { useContext, useEffect, useRef } from 'react';
+import { NativeSyntheticEvent, ReturnKeyTypeOptions, TextInputSubmitEditingEventData } from 'react-native';
 
 export interface FormItem {
   ref?: any;
   name?: string;
-  onReceiveProps?: (data: any) => void;
+  onReceiveProps?: (data: FormItemOptions) => void;
   onValidate?: any;
   focus?: any;
   blur?: any;
@@ -13,9 +14,8 @@ export interface FormItem {
 }
 
 export interface FormItemOptions {
-  // returnKeyType?: FormItem;
-  // // onSubmitEditing?: (e: NativeSyntheticEvent<TextInputSubmitEditingEventData>) => void;
-  // nextElement?: ChildOption;
+  returnKeyType?: ReturnKeyTypeOptions;
+  onSubmitEditing?: (e: NativeSyntheticEvent<TextInputSubmitEditingEventData>) => void;
   submitting?: boolean;
   submitted?: boolean;
 }
@@ -35,6 +35,7 @@ export interface InputProps {
   onChangeValue?: (value: any) => void;
   onError?: (value: any) => void;
   disabled?: boolean;
+  readonly?: boolean;
 }
 
 export interface RefProps {

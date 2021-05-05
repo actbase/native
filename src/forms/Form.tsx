@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useCallback, useEffect, useState } from 'react';
 import { LayoutChangeEvent, Text, View, ViewProps } from 'react-native';
-import { FormContext, FormItem, SubscribeArgs } from './Context';
+import { FormContext, FormItem, FormItemOptions, SubscribeArgs } from './Context';
 import { measure } from '../utils/size';
 
 interface FormProps extends ViewProps {
@@ -36,18 +36,16 @@ const Form = (props: React.PropsWithChildren<FormProps>) => {
 
     elements?.forEach((v: FormItem | undefined, index: number) => {
       if (!v) return;
-      v.onReceiveProps?.({ index, message: 'asdfasdf' });
-      console.log(v, index);
-      // const args: ExtraProps = {};
-      // if (elements.length - 1 <= index) {
-      //   args.returnKeyType = 'done';
-      //   // args.onSubmitEditing = submit;
-      // } else {
-      //   args.returnKeyType = 'next';
-      //   args.nextElement = elements[index + 1].options;
-      //   // args.onSubmitEditing = elements[index + 1].options.focus;
-      // }
-      // v.options?.setProps?.(args);
+
+      const args: FormItemOptions = {};
+      if (elements.length - 1 <= index) {
+        args.returnKeyType = 'done';
+        args.onSubmitEditing = submit;
+      } else {
+        args.returnKeyType = 'next';
+        args.onSubmitEditing = elements[index + 1]?.focus;
+      }
+      v.onReceiveProps?.(args);
     });
   };
 

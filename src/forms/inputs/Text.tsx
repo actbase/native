@@ -1,16 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { InputProps, RefProps, useFormField } from '../Context';
+import { FormItemOptions, InputProps, RefProps, useFormField } from '../Context';
 import { NativeSyntheticEvent, TextInput, TextInputFocusEventData, TextInputProps, View } from 'react-native';
 
 type InputTextProps = InputProps & TextInputProps;
 
 const InputText = (props: InputTextProps) => {
+  const [receiveProps, setReceiveProps] = useState<FormItemOptions>({});
   const onReceiveProps = (data: any) => {
-    console.log('onReceiveProps', data);
+    setReceiveProps(data);
   };
 
   const remote: RefProps | undefined = useFormField({ ...props, onReceiveProps });
-  const [state, setState] = useState<'focus' | 'idle' | 'disabled'>('idle');
+  const [state, setState] = useState<'focus' | 'idle' | 'disabled'>(
+    props.disabled || props.readonly ? 'disabled' : 'idle',
+  );
 
   useEffect(() => {
     remote.setValue?.(props?.value);
@@ -35,7 +38,14 @@ const InputText = (props: InputTextProps) => {
 
   return (
     <View>
-      <TextInput {...props} onChangeText={handleChangeText} onBlur={handleBlur} onFocus={handleFocus} />
+      <TextInput
+        {...props}
+        onChangeText={handleChangeText}
+        onBlur={handleBlur}
+        onFocus={handleFocus}
+        returnKeyType={props.returnKeyType || receiveProps.returnKeyType}
+        onSubmitEditing={props.onSubmitEditing || receiveProps.onSubmitEditing}
+      />
     </View>
   );
 };
