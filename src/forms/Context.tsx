@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useRef } from 'react';
 export interface FormItem {
   ref?: any;
   name?: string;
-  onReceiveProps?: (data: FormItemOptions) => void;
+  onReceiveProps?: (data: any) => void;
   onValidate?: any;
   focus?: any;
   blur?: any;
@@ -34,6 +34,7 @@ export interface InputProps {
   value?: any;
   onChangeValue?: (value: any) => void;
   onError?: (value: any) => void;
+  disabled?: boolean;
 }
 
 export interface RefProps {

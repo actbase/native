@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { LayoutChangeEvent, Text, View, ViewProps } from 'react-native';
 import { FormContext, FormItem, SubscribeArgs } from './Context';
 import { measure } from '../utils/size';
@@ -17,18 +17,9 @@ const Form = (props: React.PropsWithChildren<FormProps>) => {
   const items = React.useRef<{ [key: string]: FormItem | undefined }>({});
   const [lastLayout, setLastLayout] = React.useState<{ width?: number; height?: number }>();
   const [inValue, setInValue] = useState<{ [key: string]: any }>({});
-  //props.value
+  const [lastIndex, setLastIndex] = useState(0);
 
-  // const data = inValue || props.value;
-
-  const handleLayout = async (e: LayoutChangeEvent) => {
-    onLayout && onLayout(e);
-    const { width, height } = e.nativeEvent.layout;
-
-    const pos = { width, height };
-    if (lastLayout?.width === pos.width && lastLayout?.height === pos.height) return;
-    setLastLayout(pos);
-
+  const remapFields = async () => {
     for (let key of Object.keys(items?.current)) {
       const el = items?.current[key];
       if (el && el?.ref) {
@@ -39,11 +30,13 @@ const Form = (props: React.PropsWithChildren<FormProps>) => {
       }
     }
 
-    const elements = Object.values(items.current)?.sort((a, b) =>
+    const elements = Object.values(items.current).sort((a, b) =>
       (a?.area || 0) < (b?.area || 0) ? 1 : (a?.area || 0) > (b?.area || 0) ? -1 : 0,
     );
 
-    elements?.forEach((v: any, index: number) => {
+    elements?.forEach((v: FormItem | undefined, index: number) => {
+      if (!v) return;
+      v.onReceiveProps?.({ index, message: 'asdfasdf' });
       console.log(v, index);
       // const args: ExtraProps = {};
       // if (elements.length - 1 <= index) {
@@ -57,6 +50,21 @@ const Form = (props: React.PropsWithChildren<FormProps>) => {
       // v.options?.setProps?.(args);
     });
   };
+
+  const handleLayout = async (e: LayoutChangeEvent) => {
+    onLayout && onLayout(e);
+    const { width, height } = e.nativeEvent.layout;
+
+    const pos = { width, height };
+    if (lastLayout?.width === pos.width && lastLayout?.height === pos.height) return;
+    setLastLayout(pos);
+
+    await remapFields();
+  };
+
+  useEffect(() => {
+    remapFields().catch(() => null);
+  }, [lastIndex]);
 
   const getValues = () => {
     const output: { [key: string]: any } = {};
@@ -92,6 +100,7 @@ const Form = (props: React.PropsWithChildren<FormProps>) => {
 
   const subscribe = useCallback(
     (props: SubscribeArgs) => {
+      setLastIndex(Object.keys(items.current || {}).length);
       const ix = props?.idx || String(Object.keys(items.current || {}).length + 1);
       items.current[ix] = props;
       return {
@@ -107,7 +116,9 @@ const Form = (props: React.PropsWithChildren<FormProps>) => {
     [setInValue],
   );
 
-  const submit = () => {};
+  const submit = () => {
+    getValues();
+  };
 
   const value = {
     subscribe,
@@ -115,7 +126,7 @@ const Form = (props: React.PropsWithChildren<FormProps>) => {
   };
   return (
     <FormContext.Provider value={value}>
-      <Text>{JSON.stringify(getValues(), null, 2)}</Text>
+      <Text>{JSON.stringify(inValue, null, 2)}</Text>
       <View onLayout={handleLayout} {...oProps} />
     </FormContext.Provider>
   );
