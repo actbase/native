@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text as RNText, TextProps } from 'react-native';
-import { NamedStyles, StyleContext } from '../styling/context';
+import { NamedStyles, StyleContext } from '../styling/Context';
 
 interface TProps extends TextProps {
   className?: string;

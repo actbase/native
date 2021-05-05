@@ -1,6 +1,6 @@
 import React, { PropsWithChildren } from 'react';
 import { LayoutRectangle, StyleProp, View, ViewStyle } from 'react-native';
-import { DimensionContext } from './context';
+import { DimensionContext } from './Context';
 
 interface Props {
   style?: StyleProp<ViewStyle>;

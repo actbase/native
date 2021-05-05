@@ -10,6 +10,8 @@ interface TouchableProps extends TouchableOpacityProps {
   renderComponent: ALL_VALUE;
 }
 
+const defaults = Abase.defaults;
+
 const Touchable = (props: TouchableProps) => {
   const Element = props.renderComponent || TouchableOpacity;
   const [lock, setLock] = useState(false);
@@ -25,13 +27,13 @@ const Touchable = (props: TouchableProps) => {
       });
     } else {
       setLock(true);
-      setTimeout(() => setLock(false), Abase.Touchable.waitDelay);
+      setTimeout(() => setLock(false), defaults.Touchable.waitDelay);
     }
   };
 
   return (
     <Element
-      activeOpacity={Abase.Touchable.activeOpacity}
+      activeOpacity={defaults.Touchable.activeOpacity}
       {...props}
       onPress={handlePress}
       disabled={lock || props?.disabled}
