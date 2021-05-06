@@ -49,7 +49,10 @@ export const useFormField = (options: SubscribeArgs = {}) => {
   const context = useContext(FormContext);
 
   useEffect(() => {
-    const o = context?.subscribe?.(options);
+    const o = context?.subscribe?.({
+      ...options,
+      focus: options?.focus || options?.ref?.focus,
+    });
     ref.current.setValue = o.setValue;
     return o.unsubscribe;
   }, []);

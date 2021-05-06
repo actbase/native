@@ -20,19 +20,21 @@ const Form = (props: React.PropsWithChildren<FormProps>) => {
   const [lastIndex, setLastIndex] = useState(0);
 
   const remapFields = async () => {
-    for (let key of Object.keys(items?.current)) {
+    for (let key of Object.keys(items.current)) {
       const el = items?.current[key];
-      if (el && el?.ref) {
-        const pos = await measure(el.ref);
+      if (el && el?.ref?.current) {
+        const pos = await measure(el.ref?.current);
         if ('pageY' in pos && 'pageX' in pos) {
           el.area = -parseFloat(`${Math.floor(pos?.pageY)}.${Math.floor(pos?.pageX)}`);
         }
       }
     }
 
-    const elements = Object.values(items.current).sort((a, b) =>
-      (a?.area || 0) < (b?.area || 0) ? 1 : (a?.area || 0) > (b?.area || 0) ? -1 : 0,
-    );
+    const elements = Object.values(items.current)
+      .filter(v => !!v)
+      .sort((a, b) => ((a?.area || 0) < (b?.area || 0) ? 1 : (a?.area || 0) > (b?.area || 0) ? -1 : 0));
+
+    console.log('elements', elements);
 
     elements?.forEach((v: FormItem | undefined, index: number) => {
       if (!v) return;

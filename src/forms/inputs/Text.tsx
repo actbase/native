@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { FormItemOptions, InputProps, RefProps, useFormField } from '../Context';
 import { NativeSyntheticEvent, TextInput, TextInputFocusEventData, TextInputProps, View } from 'react-native';
 
@@ -10,7 +10,8 @@ const InputText = (props: InputTextProps) => {
     setReceiveProps(data);
   };
 
-  const remote: RefProps | undefined = useFormField({ ...props, onReceiveProps });
+  const ref = useRef<TextInput>(null);
+  const remote: RefProps | undefined = useFormField({ ...props, ref, onReceiveProps });
   const [state, setState] = useState<'focus' | 'idle' | 'disabled'>(
     props.disabled || props.readonly ? 'disabled' : 'idle',
   );
@@ -34,11 +35,12 @@ const InputText = (props: InputTextProps) => {
     props?.onChangeText?.(text);
   };
 
-  console.log(state);
+  console.log(receiveProps, state);
 
   return (
     <View>
       <TextInput
+        ref={ref}
         {...props}
         onChangeText={handleChangeText}
         onBlur={handleBlur}
