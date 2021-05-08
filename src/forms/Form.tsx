@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useCallback, useEffect, useState } from 'react';
-import { LayoutChangeEvent, Text, View, ViewProps } from 'react-native';
+import { LayoutChangeEvent, View, ViewProps } from 'react-native';
 import { FormContext, FormItem, FormItemOptions, SubscribeArgs } from './Context';
 import { measure } from '../utils/size';
 
@@ -113,7 +113,6 @@ const Form = (props: React.PropsWithChildren<FormProps>) => {
   };
   return (
     <FormContext.Provider value={value}>
-      <Text>{JSON.stringify(getValues(), null, 2)}</Text>
       <View onLayout={handleLayout} {...oProps} />
     </FormContext.Provider>
   );

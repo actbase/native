@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { NativeSyntheticEvent, ReturnKeyTypeOptions, TextInputSubmitEditingEventData } from 'react-native';
 
 export interface FormItem {
@@ -36,26 +36,36 @@ export interface InputProps {
   onError?: (error: any | undefined) => void;
   disabled?: boolean;
   readonly?: boolean;
+  before?: any;
+  after?: any;
 }
 
-export interface RefProps {
+export interface FormRemote {
   setValue?: (value: any) => void;
+  props?: any;
 }
 
 export const FormContext = React.createContext<FormContextProps>({});
 
-export const useFormField = (options: SubscribeArgs = {}) => {
-  const ref = useRef<RefProps>({});
+export const useFormField = (options: SubscribeArgs = {}): FormRemote => {
+  const ref = useRef<FormRemote>({});
   const context = useContext(FormContext);
+
+  const [receiveProps, setReceiveProps] = useState<FormItemOptions>({});
+  const onReceiveProps = (data: any) => {
+    setReceiveProps(data);
+  };
 
   useEffect(() => {
     const o = context?.subscribe?.({
       ...options,
+      onReceiveProps,
       focus: () => options?.focus() || options?.ref?.focus(),
+      blur: () => options?.blur() || options?.ref?.blur(),
     });
     ref.current.setValue = o.setValue;
     return o.unsubscribe;
   }, []);
 
-  return ref.current;
+  return { ...ref.current, props: receiveProps };
 };
