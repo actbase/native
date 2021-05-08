@@ -30,10 +30,10 @@ export interface FormContextProps {
 
 export interface InputProps {
   name?: string;
-  rules?: (() => Promise<any>)[] | (() => any)[] | undefined;
+  rules?: ((value: any, formValues: { [key: string]: any }) => Promise<any> | any)[] | undefined;
   value?: any;
   onChangeValue?: (value: any) => void;
-  onError?: (value: any) => void;
+  onError?: (error: any | undefined) => void;
   disabled?: boolean;
   readonly?: boolean;
 }
@@ -51,7 +51,7 @@ export const useFormField = (options: SubscribeArgs = {}) => {
   useEffect(() => {
     const o = context?.subscribe?.({
       ...options,
-      focus: options?.focus || options?.ref?.focus,
+      focus: () => options?.focus() || options?.ref?.focus(),
     });
     ref.current.setValue = o.setValue;
     return o.unsubscribe;

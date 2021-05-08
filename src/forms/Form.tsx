@@ -15,8 +15,8 @@ const Form = (props: React.PropsWithChildren<FormProps>) => {
   const { onLayout, ...oProps } = props;
 
   const items = React.useRef<{ [key: string]: FormItem | undefined }>({});
+  const inValue = React.useRef<{ [key: string]: any }>({});
   const [lastLayout, setLastLayout] = React.useState<{ width?: number; height?: number }>();
-  const [inValue, setInValue] = useState<{ [key: string]: any }>({});
   const [lastIndex, setLastIndex] = useState(0);
 
   const remapFields = async () => {
@@ -33,8 +33,6 @@ const Form = (props: React.PropsWithChildren<FormProps>) => {
     const elements = Object.values(items.current)
       .filter(v => !!v)
       .sort((a, b) => ((a?.area || 0) < (b?.area || 0) ? 1 : (a?.area || 0) > (b?.area || 0) ? -1 : 0));
-
-    console.log('elements', elements);
 
     elements?.forEach((v: FormItem | undefined, index: number) => {
       if (!v) return;
@@ -79,42 +77,31 @@ const Form = (props: React.PropsWithChildren<FormProps>) => {
           Object.values(items?.current).filter(v => v?.name === option?.name).length > 1);
       if (multi) {
         if (!output[name]) output[name] = [];
-        output[name].push(inValue[key]);
+        output[name].push(inValue.current[key]);
       } else {
-        output[name] = inValue[key];
+        output[name] = inValue.current[key];
       }
     }
     return output;
   };
 
-  const unsubscribe = useCallback(
-    (idx: string) => {
-      items.current[idx] = undefined;
-      setInValue(s => ({
-        ...s,
-        [idx]: undefined,
-      }));
-    },
-    [setInValue],
-  );
+  const unsubscribe = useCallback((idx: string) => {
+    items.current[idx] = undefined;
+    inValue.current[idx] = undefined;
+  }, []);
 
-  const subscribe = useCallback(
-    (props: SubscribeArgs) => {
-      setLastIndex(Object.keys(items.current || {}).length);
-      const ix = props?.idx || String(Object.keys(items.current || {}).length + 1);
-      items.current[ix] = props;
-      return {
-        unsubscribe: () => unsubscribe(ix),
-        setValue: (args: any) => {
-          setInValue(s => ({
-            ...s,
-            [ix]: args,
-          }));
-        },
-      };
-    },
-    [setInValue],
-  );
+  const subscribe = useCallback((props: SubscribeArgs) => {
+    setLastIndex(Object.keys(items.current || {}).length);
+    const ix = props?.idx || String(Object.keys(items.current || {}).length + 1);
+    items.current[ix] = props;
+    return {
+      unsubscribe: () => unsubscribe(ix),
+      setValue: (args: any) => {
+        inValue.current[ix] = args;
+        return getValues();
+      },
+    };
+  }, []);
 
   const submit = () => {
     getValues();
@@ -126,7 +113,7 @@ const Form = (props: React.PropsWithChildren<FormProps>) => {
   };
   return (
     <FormContext.Provider value={value}>
-      <Text>{JSON.stringify(inValue, null, 2)}</Text>
+      <Text>{JSON.stringify(getValues(), null, 2)}</Text>
       <View onLayout={handleLayout} {...oProps} />
     </FormContext.Provider>
   );
