@@ -6,11 +6,11 @@ interface Props {
   style?: StyleProp<ViewStyle>;
 }
 
-const DimensionProvider = (props: PropsWithChildren<Props>) => {
+const DimensionProvider = ({ style, children }: PropsWithChildren<Props>) => {
   const [dimensions, setDimensions] = React.useState<LayoutRectangle | undefined>();
   return (
-    <View style={props.style} onLayout={({ nativeEvent }) => setDimensions(nativeEvent?.layout)}>
-      <DimensionContext.Provider value={{ dimensions }}>{props.children}</DimensionContext.Provider>
+    <View style={style} onLayout={({ nativeEvent }) => setDimensions(nativeEvent?.layout)}>
+      <DimensionContext.Provider value={{ dimensions }}>{children}</DimensionContext.Provider>
     </View>
   );
 };
