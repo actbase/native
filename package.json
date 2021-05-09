@@ -30,9 +30,7 @@
     "url": "git://github.com/actbase/native.git"
   },
   "dependencies": {
-    "@actbase/react-absolute": "^0.8.2",
-    "immer": "^9.0.2",
-    "rc-util": "^5.12.2"
+    "@actbase/react-absolute": "^0.8.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.6.2",
