@@ -22,7 +22,7 @@ export const getWindowSize = (): ScaledSize => {
 };
 
 export const measure = (
-  target: null | number | React.Component<any, any> | React.ComponentClass<any>,
+  target: null | number | React.Component<unknown, unknown> | React.ComponentClass<unknown>,
 ): Promise<MeasureOffset | Error> => {
   return new Promise((resolve, reject) => {
     try {
