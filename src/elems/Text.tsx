@@ -1,25 +1,14 @@
-import React from 'react';
+import * as React from 'react';
 import { Text as RNText, TextProps } from 'react-native';
-import { NamedStyles, StyleContext } from '../styling/Context';
 
-interface TProps extends TextProps {
-  className?: string;
-  conditionClassName?: {
-    focus: string;
-    invalid: string;
-    checked: string;
-  };
-  conditionStyle?: {
-    focus: NamedStyles;
-    invalid: NamedStyles;
-    checked: NamedStyles;
-  };
-}
+import { useStyleParse } from '../styling/RelStyleSheet';
 
-export const Text: React.FC<TProps> = props => {
-  const styleContext = React.useContext(StyleContext);
-  const style = [styleContext.getStyle(props.className), props.style];
+export const Text: React.FC<TextProps> = props => {
+  const style = useStyleParse(props?.style || {});
   return <RNText {...props} style={style} />;
 };
+
+Text.displayName = 'Actbase:Text';
+Text.defaultProps = {};
 
 export default Text;

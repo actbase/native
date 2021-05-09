@@ -43,6 +43,15 @@ export function create<T extends StyleObject<T> & { [key: string]: any }>(styles
   };
 }
 
+export function useStyleParse(style: any): AllStyles {
+  if (typeof style === 'function') {
+    return {};
+  }
+
+  return style as AllStyles;
+}
+
 export const RelStyleSheet = {
   create,
+  useStyleParse,
 };
