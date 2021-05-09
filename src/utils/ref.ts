@@ -4,7 +4,7 @@ export function fillRef<T>(ref: React.Ref<T>, node: T) {
   if (typeof ref === 'function') {
     ref(node);
   } else if (typeof ref === 'object' && ref && 'current' in ref) {
-    (<any>ref).current = node;
+    (ref as { current: unknown }).current = node;
   }
 }
 
