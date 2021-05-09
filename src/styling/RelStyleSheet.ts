@@ -25,9 +25,9 @@ type StyleObject<T> = {
   [P in keyof T]: StyleResult;
 };
 
-type ReturnAny<T> = { [P in keyof T]: any };
+type ReturnAny<T> = { [P in keyof T]: unknown };
 
-export function create<T extends StyleObject<T> & { [key: string]: any }>(styles: T): ReturnAny<T> {
+export function create<T extends StyleObject<T> & { [key: string]: AllStyles }>(styles: T): ReturnAny<T> {
   const keys = Object.keys(styles);
   const onlyStyleKeys = keys.filter((key: string) => typeof styles[key] !== 'function');
   const onlyStyles = StyleSheet.create(
@@ -43,7 +43,7 @@ export function create<T extends StyleObject<T> & { [key: string]: any }>(styles
   };
 }
 
-export function useStyleParse(style: any): AllStyles {
+export function useStyleParse(style: unknown): AllStyles {
   if (typeof style === 'function') {
     return {};
   }

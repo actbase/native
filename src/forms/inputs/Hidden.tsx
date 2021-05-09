@@ -5,7 +5,9 @@ import { FormRemote, InputProps, useFormField } from '../Context';
 const InputHidden = (props: InputProps) => {
   const remote: FormRemote = useFormField(props);
   useEffect(() => {
-    remote.setValue?.(props?.value);
+    if (remote?.setValue) {
+      remote.setValue(props?.value);
+    }
   }, [props?.value]);
 
   return <></>;
