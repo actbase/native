@@ -1,7 +1,8 @@
 import { ImageStyle, TextStyle, ViewStyle, StyleSheet } from 'react-native';
 
 type AllStyles = ViewStyle | TextStyle | ImageStyle;
-type StyleProps = {
+export type StyleResult = AllStyles | ((props: StyleProps) => AllStyles);
+export type StyleProps = {
   width: number;
   height: number;
   mode: 'dark' | 'light';
@@ -19,8 +20,9 @@ type StyleProps = {
   :invalid // invalid
   */
 };
+
 type StyleObject<T> = {
-  [P in keyof T]: AllStyles | ((props: StyleProps) => AllStyles);
+  [P in keyof T]: StyleResult;
 };
 
 type ReturnAny<T> = { [P in keyof T]: any };

@@ -1,5 +1,7 @@
 import * as React from 'react';
+
 import View from './elems/View';
+import { StyleProps, StyleResult } from './styling/RelStyleSheet';
 
 const defaults = {
   Touchable: {
@@ -9,7 +11,6 @@ const defaults = {
 };
 
 const parseStyle = (_styles: any, props: any) => {
-  // let output = undefined;
   let styles = _styles;
   if (typeof styles === 'function') {
     styles = styles(props);
@@ -18,7 +19,9 @@ const parseStyle = (_styles: any, props: any) => {
   return styles;
 };
 
-const ActbaseBuilder = (Element: any) => (styles: Function | string[] | string | undefined) => (props: any) => {
+const ActbaseBuilder = (Element: any) => (
+  styles: ((props: StyleProps) => StyleResult) | string[] | string | undefined,
+) => (props: any) => {
   // eslint-disable-next-line no-undef
   console.log(Element, parseStyle(styles, props), props);
   return <Element {...props} />;
