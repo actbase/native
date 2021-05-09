@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { FormRemote, InputProps, useFormField } from '../Context';
 import {
   NativeSyntheticEvent,
   StyleProp,
@@ -9,19 +8,12 @@ import {
   TextStyle,
   View,
 } from 'react-native';
+
+import { FormRemote, InputProps, useFormField } from '../Context';
 import { composeRef } from '../../utils/ref';
 import { TEXT_STYLE_NAMES } from '../../utils/styles';
 
 type InputTextProps = InputProps & TextInputProps;
-
-// const styles = RelStyleSheet.create({
-//   aaa: ({ width, height }) => ({
-//     backgroundColor: width > 500 ? '#f00' : '#0f0',
-//   }),
-//   bbb: {
-//     backgroundColor: '#00f',
-//   },
-// });
 
 const InputText = React.forwardRef<TextInput, InputTextProps>((props, fowarededRef) => {
   const ref = useRef<TextInput>(null);

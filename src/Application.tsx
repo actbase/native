@@ -1,4 +1,4 @@
-import React, { ReactElement, ReactNode } from 'react';
+import React, { PropsWithChildren, ReactElement, ReactNode } from 'react';
 import { StyleProp, View, ViewStyle } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AbsoluteProvider } from '@actbase/react-absolute';
@@ -7,14 +7,19 @@ interface Props {
   style?: StyleProp<ViewStyle>;
 }
 
-export const Application: React.FC<Props> = props => {
-  const children: React.ReactNode[] = React.Children.toArray(props.children);
-  const providerGroup: React.ReactNode = children?.find((el: any): el is React.ReactElement => {
-    return el.type?.__NAME === Providers?.__NAME;
+const $Providers = () => <></>;
+$Providers.$$NAME = '__@@ABX_PROVID@@';
+
+export const Providers = $Providers;
+
+export const Application = ({ children, style }: PropsWithChildren<Props>) => {
+  const oChildren: React.ReactNode[] = React.Children.toArray(children);
+  const providerGroup: React.ReactNode = oChildren?.find((el: any): el is React.ReactElement => {
+    return el.type?.__NAME === Providers?.$$NAME;
   });
 
-  const bodies: React.ReactNode[] = children?.filter((el: any): el is React.ReactElement => {
-    return el.type?.__NAME !== Providers?.__NAME;
+  const bodies: React.ReactNode[] = oChildren?.filter((el: any): el is React.ReactElement => {
+    return el.type?.__NAME !== Providers?.$$NAME;
   });
 
   const providers = React.Children.toArray((providerGroup as ReactElement).props.children);
@@ -34,7 +39,7 @@ export const Application: React.FC<Props> = props => {
     return el;
   }, React.createElement(React.Fragment, null, []));
 
-  let output = undefined;
+  let output;
   if (exports) {
     let last: ReactElement = exports as ReactElement;
     while (last.props.children?.length > 0) {
@@ -48,14 +53,9 @@ export const Application: React.FC<Props> = props => {
 
   return (
     <SafeAreaProvider>
-      <View style={props.style}>
+      <View style={style}>
         <AbsoluteProvider>{output}</AbsoluteProvider>
       </View>
     </SafeAreaProvider>
   );
 };
-
-const _Providers = () => <></>;
-_Providers.__NAME = '__@@ABX_PROVID@@';
-
-export const Providers = _Providers;

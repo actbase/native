@@ -22,3 +22,7 @@ export const TEXT_STYLE_NAMES = [
   'textAlignVertical',
   'includeFontPadding',
 ];
+
+export default {
+  TEXT_STYLE_NAMES,
+};

@@ -1,4 +1,4 @@
-import { ImageStyle, TextStyle, ViewStyle, StyleSheet } from 'react-native';
+import { ImageStyle, StyleSheet, TextStyle, ViewStyle } from 'react-native';
 
 type AllStyles = ViewStyle | TextStyle | ImageStyle;
 export type StyleResult = AllStyles | ((props: StyleProps) => AllStyles);
@@ -31,8 +31,8 @@ export function create<T extends StyleObject<T> & { [key: string]: any }>(styles
   const keys = Object.keys(styles);
   const onlyStyleKeys = keys.filter((key: string) => typeof styles[key] !== 'function');
   const onlyStyles = StyleSheet.create(
-    <{ [key: string]: AllStyles }>onlyStyleKeys.reduce((x, y) => {
-      x = styles[y];
+    onlyStyleKeys.reduce((x: { [key: string]: AllStyles }, y) => {
+      x[y] = styles[y];
       return x;
     }, {}),
   );

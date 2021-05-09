@@ -1,8 +1,10 @@
 import * as React from 'react';
 import { useCallback, useEffect, useState } from 'react';
 import { LayoutChangeEvent, View, ViewProps } from 'react-native';
-import { FormContext, FormItem, FormItemOptions, SubscribeArgs } from './Context';
+
 import { measure } from '../utils/size';
+
+import { FormContext, FormItem, FormItemOptions, SubscribeArgs } from './Context';
 
 interface FormProps extends ViewProps {
   value?: { [key: string]: any };
@@ -67,7 +69,7 @@ const Form = (props: React.PropsWithChildren<FormProps>) => {
   const getValues = () => {
     const output: { [key: string]: any } = {};
     const keys = Object.keys(items?.current)?.filter(v => !!items?.current[v]?.name);
-    for (let key of keys) {
+    for (const key of keys) {
       const option = items?.current[key];
       const name = option?.name || '';
       const multi =

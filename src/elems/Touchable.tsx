@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { TouchableOpacity, TouchableOpacityProps } from 'react-native';
+
 import Abase from '../Actbase';
 
 type ALL_VALUE = any;
@@ -10,7 +11,7 @@ interface TouchableProps extends TouchableOpacityProps {
   renderComponent: ALL_VALUE;
 }
 
-const defaults = Abase.defaults;
+const { defaults } = Abase;
 
 const Touchable = (props: TouchableProps) => {
   const Element = props.renderComponent || TouchableOpacity;
