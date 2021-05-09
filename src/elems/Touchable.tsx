@@ -5,7 +5,6 @@ import Abase from '../Actbase';
 
 interface TouchableProps extends TouchableOpacityProps {
   onPress?: (e: GestureResponderEvent) => Promise<void> | null | undefined | void;
-  // eslint-disable-next-line react/require-default-props
   onProcess?: (lock: boolean) => void;
   renderComponent: React.FC<TouchableOpacityProps> | React.ComponentClass<TouchableOpacityProps>;
 }
