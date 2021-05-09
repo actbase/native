@@ -12,14 +12,16 @@ $Providers.$$NAME = '__@@ABX_PROVID@@';
 
 export const Providers = $Providers;
 
+type ElementOf = React.ReactNode & { type?: { $$NAME?: string } };
+
 export const Application = ({ children, style }: PropsWithChildren<Props>) => {
-  const oChildren: React.ReactNode[] = React.Children.toArray(children);
-  const providerGroup: React.ReactNode = oChildren?.find((el: any): el is React.ReactElement => {
-    return el.type?.__NAME === Providers?.$$NAME;
+  const oChildren: ElementOf[] = React.Children.toArray(children) as ElementOf[];
+  const providerGroup: React.ReactNode = oChildren?.find((el: ElementOf) => {
+    return el.type?.$$NAME === Providers?.$$NAME;
   });
 
-  const bodies: React.ReactNode[] = oChildren?.filter((el: any): el is React.ReactElement => {
-    return el.type?.__NAME !== Providers?.$$NAME;
+  const bodies: React.ReactNode[] = oChildren?.filter((el: ElementOf) => {
+    return el.type?.$$NAME !== Providers?.$$NAME;
   });
 
   const providers = React.Children.toArray((providerGroup as ReactElement).props.children);
