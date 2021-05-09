@@ -1,30 +1,30 @@
 import React, { useState } from 'react';
-import { TouchableOpacity, TouchableOpacityProps } from 'react-native';
+import { GestureResponderEvent, TouchableOpacity, TouchableOpacityProps } from 'react-native';
 
 import Abase from '../Actbase';
 
-type ALL_VALUE = any;
-
 interface TouchableProps extends TouchableOpacityProps {
-  onPress?: (e: ALL_VALUE) => Promise<ALL_VALUE> | null | undefined | void;
+  onPress?: (e: GestureResponderEvent) => Promise<void> | null | undefined | void;
+  // eslint-disable-next-line react/require-default-props
   onProcess?: (lock: boolean) => void;
-  renderComponent: ALL_VALUE;
+  renderComponent: React.FC<TouchableOpacityProps> | React.ComponentClass<TouchableOpacityProps>;
 }
 
 const { defaults } = Abase;
 
 const Touchable = (props: TouchableProps) => {
-  const Element = props.renderComponent || TouchableOpacity;
+  const { renderComponent, onProcess } = props;
+  const Element = renderComponent || TouchableOpacity;
   const [lock, setLock] = useState(false);
-  const handlePress = (e: ALL_VALUE) => {
+  const handlePress = (e: GestureResponderEvent) => {
     if (!props?.onPress) return;
     const pressed = props?.onPress?.(e);
     if (pressed instanceof Promise) {
       setLock(true);
-      props?.onProcess?.(true);
+      if (onProcess) onProcess(true);
       pressed.finally(() => {
         setLock(false);
-        props?.onProcess?.(false);
+        if (onProcess) onProcess(false);
       });
     } else {
       setLock(true);
@@ -40,6 +40,11 @@ const Touchable = (props: TouchableProps) => {
       disabled={lock || props?.disabled}
     />
   );
+};
+
+Touchable.defaultProps = {
+  onPress: () => undefined,
+  onProcess: () => undefined,
 };
 
 export default Touchable;
