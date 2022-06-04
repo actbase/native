@@ -1,10 +1,13 @@
-import React, { PropsWithChildren, ReactElement, ReactNode } from 'react';
+import React, { Fragment, PropsWithChildren, ReactElement, ReactNode } from 'react';
 import { StyleProp, View, ViewStyle } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AbsoluteProvider } from '@actbase/react-absolute';
 
+import DevTool from './devtools';
+
 interface Props {
   style?: StyleProp<ViewStyle>;
+  debug?: boolean;
 }
 
 const $Providers = () => <></>;
@@ -14,7 +17,7 @@ export const Providers = $Providers;
 
 type ElementOf = React.ReactNode & { type?: { $$NAME?: string } };
 
-export const Application = ({ children, style }: PropsWithChildren<Props>) => {
+export const Application = ({ children, style, debug }: PropsWithChildren<Props>) => {
   const oChildren: ElementOf[] = React.Children.toArray(children) as ElementOf[];
   const providerGroup: React.ReactNode = oChildren?.find((el: ElementOf) => {
     return el.type?.$$NAME === Providers?.$$NAME;
@@ -53,11 +56,15 @@ export const Application = ({ children, style }: PropsWithChildren<Props>) => {
     output = bodies;
   }
 
+  const ToolElement = !debug ? Fragment : DevTool;
+
   return (
     <SafeAreaProvider>
-      <View style={style}>
-        <AbsoluteProvider>{output}</AbsoluteProvider>
-      </View>
+      <ToolElement>
+        <View style={style}>
+          <AbsoluteProvider>{output}</AbsoluteProvider>
+        </View>
+      </ToolElement>
     </SafeAreaProvider>
   );
 };
