@@ -46,6 +46,9 @@ const useConsole = (enabled, types = ['log'], setConsoleLogs) => {
         const body = parseLogs(arguments, 0);
         setConsoleLogs(o => {
           const draft = [...o];
+          if (draft.length > 100) {
+            draft.splice(100, draft.length - 100);
+          }
           draft.splice(0, 0, {
             type: 'log',
             body,
