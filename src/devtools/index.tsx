@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, useEffect, useMemo, useRef, useState } from 'react';
+import React, { PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Animated,
   Image,
@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { BUBBLE_SIZE, MINUS_SIZE, NetworkLogItem } from './common';
+import { BUBBLE_SIZE, ConsoleLogItem, MINUS_SIZE, NetworkLogItem } from './common';
 import Network from './network';
 import Console from './console';
 import System from './system';
@@ -36,15 +36,55 @@ interface Props {
 const DevTool = ({ children, module, console }: PropsWithChildren<Props>) => {
   const inset = useSafeAreaInsets();
 
+  const [modules, setModules] = useState([
+    {
+      key: 'home',
+      name: 'Home',
+    },
+  ]);
+
   const [httpLogs, setHttpLogs] = React.useState<NetworkLogItem[]>([]);
   useNetwork(module?.network !== false, setHttpLogs);
+  useEffect(() => {
+    const enabled = module?.network !== false;
+    setModules(x => {
+      const draft = [...x];
+      const ix = draft.findIndex(y => y.key === 'network');
+      if (!enabled && ix >= 0) {
+        draft.splice(ix, 1);
+      } else if (enabled && ix < 0) {
+        draft.push({
+          key: 'network',
+          name: 'Network',
+        });
+      }
+      return draft;
+    });
+  }, [module?.network !== false]);
 
-  const [consoleLogs, setConsoleLogs] = React.useState([]);
-  useConsole(
-    module?.console !== false,
-    console?.targets ?? ['log', 'debug', 'trace', 'warn'],
-    setConsoleLogs,
-  );
+  const [consoleLogs, setConsoleLogs] = React.useState<ConsoleLogItem[]>([]);
+  useConsole(module?.console !== false, console?.targets ?? ['log', 'debug', 'trace', 'warn'], setConsoleLogs);
+  useEffect(() => {
+    const enabled = module?.console !== false;
+    setModules(x => {
+      const draft = [...x];
+      const ix = draft.findIndex(y => y.key === 'console');
+      if (!enabled && ix >= 0) {
+        draft.splice(ix, 1);
+      } else if (enabled && ix < 0) {
+        draft.push({
+          key: 'console',
+          name: 'Console',
+        });
+      }
+      return draft;
+    });
+  }, [module?.console !== false]);
+
+  const counts: { [key: string]: number } = {
+    network: httpLogs.length,
+    console: consoleLogs.length,
+  };
 
   const { width, height } = useWindowDimensions();
   const [index, setIndex] = useState(-1);
@@ -136,17 +176,17 @@ const DevTool = ({ children, module, console }: PropsWithChildren<Props>) => {
       onPanResponderMove: opened
         ? () => undefined
         : Animated.event(
-          [
-            null,
+            [
+              null,
+              {
+                dx: anim.x,
+                dy: anim.y,
+              },
+            ],
             {
-              dx: anim.x,
-              dy: anim.y,
+              useNativeDriver: false,
             },
-          ],
-          {
-            useNativeDriver: false,
-          },
-        ),
+          ),
       onPanResponderRelease: (_, gesture) => {
         const { dx, dy, vx, vy } = gesture;
         if ((Math.abs(dx) < 5 && Math.abs(dy) < 5) || opened) {
@@ -206,6 +246,20 @@ const DevTool = ({ children, module, console }: PropsWithChildren<Props>) => {
     return 20;
   }, [left]);
 
+  const renderScreen = useCallback(() => {
+    const mod = modules[index];
+    if (mod?.key === 'home') {
+      return <System />;
+    }
+    if (mod?.key === 'network') {
+      return <Network data={httpLogs} onClear={() => setHttpLogs([])} />;
+    }
+    if (mod?.key === 'console') {
+      return <Console data={consoleLogs} onClear={() => setConsoleLogs([])} />;
+    }
+    return undefined;
+  }, [modules, index]);
+
   return (
     <>
       {children}
@@ -236,39 +290,30 @@ const DevTool = ({ children, module, console }: PropsWithChildren<Props>) => {
             paddingVertical: 10,
           }}
         >
-          <View style={[styles.bubble, { position: 'relative', marginHorizontal: 5 }]}>
-            <TouchableOpacity
-              activeOpacity={1}
-              onPress={() => setIndex(1)}
-              style={[styles.bubbleItem, index === 1 ? styles.bubbleItemActive : {}]}
-            >
-              <Text style={{ fontSize: 10, fontWeight: 'bold', color: '#555' }} allowFontScaling={false}>
-                Network
-              </Text>
-              <View style={styles.bubbleDesc}>
-                <View style={styles.bubbleDescItem}>
-                  <Text style={styles.bubbleDescText}>{httpLogs?.length}</Text>
-                </View>
+          {modules?.map((item, n) => {
+            if (n === 0) return undefined;
+            const desc = counts[item.key];
+            return (
+              <View style={[styles.bubble, { position: 'relative', marginHorizontal: 5 }]} key={item.key}>
+                <TouchableOpacity
+                  activeOpacity={1}
+                  onPress={() => setIndex(n)}
+                  style={[styles.bubbleItem, n === index ? styles.bubbleItemActive : {}]}
+                >
+                  <Text style={{ fontSize: 10, fontWeight: 'bold', color: '#555' }} allowFontScaling={false}>
+                    {item.name}
+                  </Text>
+                  {desc !== undefined && (
+                    <View style={styles.bubbleDesc}>
+                      <View style={styles.bubbleDescItem}>
+                        <Text style={styles.bubbleDescText}>{desc}</Text>
+                      </View>
+                    </View>
+                  )}
+                </TouchableOpacity>
               </View>
-            </TouchableOpacity>
-          </View>
-
-          <View style={[styles.bubble, { position: 'relative', marginHorizontal: 5 }]}>
-            <TouchableOpacity
-              activeOpacity={1}
-              onPress={() => setIndex(2)}
-              style={[styles.bubbleItem, index === 2 ? styles.bubbleItemActive : {}]}
-            >
-              <Text style={{ fontSize: 10, fontWeight: 'bold', color: '#555' }} allowFontScaling={false}>
-                Console
-              </Text>
-              <View style={styles.bubbleDesc}>
-                <View style={styles.bubbleDescItem}>
-                  <Text style={styles.bubbleDescText}>{consoleLogs?.length}</Text>
-                </View>
-              </View>
-            </TouchableOpacity>
-          </View>
+            );
+          })}
 
           <View style={[styles.bubble, { position: 'relative', marginHorizontal: 5 }]}>
             <TouchableOpacity activeOpacity={1} onPress={handleExit} style={styles.bubbleItem}>
@@ -294,22 +339,7 @@ const DevTool = ({ children, module, console }: PropsWithChildren<Props>) => {
           },
         ]}
       >
-        {index >= 0 && (
-          <View style={{ flex: 1 }}>
-            {index === 2 ? (
-              <>
-                {/* @ts-ignore */}
-                <Console data={consoleLogs} onClear={() => setConsoleLogs([])} />
-              </>
-            ) : index === 1 ? (
-              <>
-                <Network data={httpLogs} onClear={() => setHttpLogs([])} />
-              </>
-            ) : (
-              <System />
-            )}
-          </View>
-        )}
+        <View style={{ flex: 1 }}>{renderScreen()}</View>
         <View style={styles.footer}>
           <Text style={styles.footerTitle}>Actbase Tools</Text>
           <Text style={styles.footerUri}>https://actbase.io</Text>

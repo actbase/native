@@ -2,8 +2,9 @@ import React from 'react';
 import { FlatList, Text, TouchableOpacity, View } from 'react-native';
 
 import styles from './styles';
+import { ConsoleLogItem, handleCopy, isClipboardEnabled } from './common';
 
-const Console = ({ data, onClear }: { data: any[]; onClear: () => void }) => {
+const Console = ({ data, onClear }: { data: ConsoleLogItem[]; onClear: () => void }) => {
   return (
     <FlatList
       data={data}
@@ -57,12 +58,17 @@ const Console = ({ data, onClear }: { data: any[]; onClear: () => void }) => {
               <View style={styles.consoleItemTag}>
                 <Text style={styles.consoleItemTagText}>{item.type?.toUpperCase()}</Text>
               </View>
-              <Text style={{ fontSize: 10, color: '#555' }}>{timeStr?.join(':')}</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Text style={{ fontSize: 10, color: '#555' }}>{timeStr?.join(':')}</Text>
+                {isClipboardEnabled && (
+                  <TouchableOpacity style={{ marginLeft: 5 }} onPress={() => handleCopy(item.body)}>
+                    <Text style={{ fontSize: 12 }}>📄</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
             </View>
 
-            <Text style={{ fontSize: 12, color: '#555', lineHeight: 16 }}>
-              {item.body}
-            </Text>
+            <Text style={{ fontSize: 12, color: '#555', lineHeight: 16 }}>{item.body}</Text>
           </View>
         );
       }}

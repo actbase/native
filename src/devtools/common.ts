@@ -62,3 +62,9 @@ export interface NetworkLogItem {
 
   body?: string;
 }
+
+export interface ConsoleLogItem {
+  type: string;
+  body: string;
+  time: number;
+}
