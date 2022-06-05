@@ -1,6 +1,7 @@
 import React, { PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Animated,
+  BackHandler,
   Image,
   PanResponder,
   ScrollView,
@@ -109,7 +110,7 @@ const DevTool = ({ children, module, console }: PropsWithChildren<Props>) => {
   const [left, setLeft] = useState(true);
   const [opened, setOpened] = useState(false);
 
-  const buffer = useRef({ x: MINUS_SIZE, y: inset.top + MINUS_SIZE });
+  const buffer = useRef({ x: width - BUBBLE_SIZE - MINUS_SIZE, y: height * 0.7 - BUBBLE_SIZE });
   const anim = useRef(new Animated.ValueXY({ ...buffer.current })).current;
   anim.addListener(value => {
     buffer.current = value;
@@ -145,6 +146,15 @@ const DevTool = ({ children, module, console }: PropsWithChildren<Props>) => {
     ]).start();
     setOpened(false);
   };
+
+  useEffect(() => {
+    if (!opened) return undefined;
+    const handler = BackHandler.addEventListener('hardwareBackPress', () => {
+      handleExit();
+      return true;
+    });
+    return () => handler.remove();
+  }, [opened]);
 
   const panResponder = useMemo(() => {
     const handlePress = () => {

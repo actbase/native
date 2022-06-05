@@ -88,47 +88,89 @@ const originSections: SectionDataItem[] = [
 
 const System = ({ variants }: { variants?: { [key: string]: unknown } }) => {
   const sections = useMemo(() => {
-    const o = [...originSections];
+    const o = JSON.parse(JSON.stringify(originSections));
 
-    if (Platform.OS === 'android' && RNDeviceInfo && RNDeviceInfo.getDeviceNameSync) {
+    try {
+      if (Platform.OS === 'android' && RNDeviceInfo && RNDeviceInfo.getDeviceNameSync) {
+        o[0].data.push({
+          title: 'Device Name',
+          value: RNDeviceInfo.getDeviceNameSync(),
+        });
+      }
+    } catch (e) {
       o[0].data.push({
         title: 'Device Name',
-        value: RNDeviceInfo.getDeviceNameSync(),
+        value: e?.message ?? 'error',
       });
     }
 
-    if (Platform.OS === 'android' && RNDeviceInfo && RNDeviceInfo.getMacAddressSync) {
+    try {
+      if (Platform.OS === 'android' && RNDeviceInfo && RNDeviceInfo.getMacAddressSync) {
+        o[0].data.push({
+          title: 'MAC Address',
+          value: RNDeviceInfo.getMacAddressSync(),
+        });
+      }
+    } catch (e) {
       o[0].data.push({
         title: 'MAC Address',
-        value: RNDeviceInfo.getMacAddressSync(),
+        value: e?.message ?? 'error',
       });
     }
 
-    if (RNDeviceInfo && RNDeviceInfo.getIpAddressSync) {
+    try {
+      if (RNDeviceInfo && RNDeviceInfo.getIpAddressSync) {
+        o[0].data.push({
+          title: 'IP Address',
+          value: RNDeviceInfo.getIpAddressSync(),
+        });
+      }
+    } catch (e) {
       o[0].data.push({
         title: 'IP Address',
-        value: RNDeviceInfo.getIpAddressSync(),
+        value: e?.message ?? 'error',
       });
     }
 
-    if (RNDeviceInfo && RNDeviceInfo.getUsedMemorySync) {
+    try {
+      if (RNDeviceInfo && RNDeviceInfo.getUsedMemorySync) {
+        o[0].data.push({
+          title: 'Used Memory',
+          value: formatBytes(RNDeviceInfo.getUsedMemorySync()),
+        });
+      }
+    } catch (e) {
       o[0].data.push({
         title: 'Used Memory',
-        value: formatBytes(RNDeviceInfo.getUsedMemorySync()),
+        value: e?.message ?? 'error',
       });
     }
 
-    if (RNDeviceInfo && RNDeviceInfo.getTotalMemorySync) {
+    try {
+      if (RNDeviceInfo && RNDeviceInfo.getTotalMemorySync) {
+        o[0].data.push({
+          title: 'Total Memory',
+          value: formatBytes(RNDeviceInfo.getTotalMemorySync()),
+        });
+      }
+    } catch (e) {
       o[0].data.push({
         title: 'Total Memory',
-        value: formatBytes(RNDeviceInfo.getTotalMemorySync()),
+        value: e?.message ?? 'error',
       });
     }
 
-    if (RNDeviceInfo && RNDeviceInfo.getFreeDiskStorageSync) {
+    try {
+      if (RNDeviceInfo && RNDeviceInfo.getFreeDiskStorageSync) {
+        o[0].data.push({
+          title: 'Free Disk Space',
+          value: formatBytes(RNDeviceInfo.getFreeDiskStorageSync()),
+        });
+      }
+    } catch (e) {
       o[0].data.push({
         title: 'Free Disk Space',
-        value: formatBytes(RNDeviceInfo.getFreeDiskStorageSync()),
+        value: e?.message ?? 'error',
       });
     }
 
@@ -145,8 +187,8 @@ const System = ({ variants }: { variants?: { [key: string]: unknown } }) => {
       }, []);
     }
 
-    const ix = o.findIndex(x => x.key === 'cmd');
-    if (NativeModules.DevSettings) {
+    const ix = o.findIndex((x: SectionDataItem) => x.key === 'cmd');
+    if (NativeModules.DevSettings && __DEV__) {
       o[ix].data.push({
         title: 'Reload',
         onPress: () => {
@@ -237,7 +279,7 @@ const System = ({ variants }: { variants?: { [key: string]: unknown } }) => {
             )}
             {item.buttons !== undefined && (
               <View style={{ flex: 1, justifyContent: 'flex-end', flexDirection: 'row' }}>
-                {item.buttons?.map(button => (
+                {item.buttons?.map((button: DataItemButton) => (
                   <TouchableOpacity
                     style={{
                       marginLeft: 5,

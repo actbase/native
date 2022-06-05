@@ -1,6 +1,6 @@
 {
   "name": "@actbase/native",
-  "version": "0.1.17",
+  "version": "0.1.20",
   "description": "React-Native Generic UI Components",
   "main": "lib/index.js",
   "module": "lib/index.js",
