@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef } from 'react';
 import { Animated, StyleSheet, Text, View } from 'react-native';
 
-import { NetworkLogItem } from './common';
+import { METHOD_OPTIONS, NetworkLogItem } from './common';
 
 const BACKGROUND_FOR_STATE = {
   ok: '#339933',
@@ -41,6 +41,8 @@ const NetworkBadge = ({ data, show }: { data: NetworkLogItem[]; show: boolean })
 
   if (!show) return null;
 
+  const methodOption = METHOD_OPTIONS[first?.method];
+
   return (
     <Animated.View
       style={[
@@ -65,21 +67,23 @@ const NetworkBadge = ({ data, show }: { data: NetworkLogItem[]; show: boolean })
           ),
         )}
       </View>
-      <View
-        style={{
-          backgroundColor: '#0f0',
-          borderRadius: 2,
-          paddingHorizontal: 4,
-          height: 15,
-          alignItems: 'center',
-          justifyContent: 'center',
-          marginTop: 3,
-        }}
-      >
-        <Text style={{ fontSize: 10, fontWeight: 'bold' }} allowFontScaling={false}>
-          {first?.method}
-        </Text>
-      </View>
+      {methodOption !== undefined && (
+        <View
+          style={{
+            backgroundColor: methodOption.background,
+            borderRadius: 2,
+            paddingHorizontal: 4,
+            height: 15,
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginTop: 3,
+          }}
+        >
+          <Text style={{ fontSize: 10, fontWeight: 'bold', color: '#fff' }} allowFontScaling={false}>
+            {methodOption.label}
+          </Text>
+        </View>
+      )}
       <Text style={{ fontSize: 8, lineHeight: 12, height: 12 }} allowFontScaling={false}>
         {!first?.finish ? '-' : first?.finish - (first?.time ?? 0)}
       </Text>

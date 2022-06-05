@@ -1,4 +1,4 @@
-import React, { Fragment, PropsWithChildren, ReactElement, ReactNode } from 'react';
+import React, { Fragment, PropsWithChildren, ReactElement, ReactNode, useMemo } from 'react';
 import { StyleProp, View, ViewStyle } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AbsoluteProvider } from '@actbase/react-absolute';
@@ -56,11 +56,18 @@ export const Application = ({ children, style, debug }: PropsWithChildren<Props>
     output = bodies;
   }
 
-  const ToolElement = !debug ? Fragment : DevTool;
+  const [ToolElement, toolProps] = useMemo(() => {
+    const e = !debug ? Fragment : DevTool;
+    const o: { [key: string]: unknown } = {};
+    if (debug) {
+      o.module = typeof debug === 'boolean' ? { console: true, network: true } : debug;
+    }
+    return [e, o];
+  }, [debug]);
+
   return (
     <SafeAreaProvider>
-      {/* @ts-ignore */}
-      <ToolElement debug={debug}>
+      <ToolElement {...toolProps}>
         <View style={style}>
           <AbsoluteProvider>{output}</AbsoluteProvider>
         </View>
