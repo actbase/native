@@ -57,4 +57,8 @@ export interface NetworkLogItem {
   time?: number;
   finish?: number;
   status?: number;
+
+  state?: 'ready' | 'ok' | 'fail';
+
+  body?: string;
 }
