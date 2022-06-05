@@ -11,10 +11,10 @@ const useNetwork = enabled => {
   const [httpLogs, setHttpLogs] = React.useState([]);
 
   React.useEffect(() => {
-    if (!enabled) return () => undefined;
+    if (!enabled) return undefined;
 
     prevData.httpSend = XMLHttpRequest.prototype.send;
-    XMLHttpRequest.prototype.send = function(body) {
+    XMLHttpRequest.prototype.send = function send(body) {
       if (body) {
         // eslint-disable-next-line @typescript-eslint/no-this-alias
         const that = this;
@@ -47,10 +47,10 @@ const useNetwork = enabled => {
     };
 
     prevData.httpOpen = XMLHttpRequest.prototype.open;
-    XMLHttpRequest.prototype.open = function() {
+    XMLHttpRequest.prototype.open = function open() {
       this.addEventListener(
         'readystatechange',
-        function() {
+        function readystatechange() {
           // eslint-disable-next-line @typescript-eslint/no-this-alias
           const that = this;
           const { readyState, status, _method, _url, _response, _headers } = this;
@@ -80,9 +80,6 @@ const useNetwork = enabled => {
               draft[ix].obj = undefined;
               draft[ix].response = _response;
               draft[ix].headers = _headers;
-
-              // delete that._response;
-              // prevData.consoleLog?.(JSON.stringify(that, null, 2));
             }
             return draft;
           });
