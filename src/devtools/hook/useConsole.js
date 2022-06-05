@@ -36,9 +36,7 @@ const parseLogs = (data, depth = 0) => {
   }, {});
 };
 
-const useConsole = (enabled, types = ['log']) => {
-  const [consoleLogs, setConsoleLogs] = React.useState([]);
-
+const useConsole = (enabled, types = ['log'], setConsoleLogs) => {
   React.useEffect(() => {
     if (!enabled) return undefined;
 
@@ -66,8 +64,6 @@ const useConsole = (enabled, types = ['log']) => {
       });
     };
   }, [enabled]);
-
-  return [consoleLogs, () => setConsoleLogs([])];
 };
 
 export default useConsole;

@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { BUBBLE_SIZE, MINUS_SIZE } from './common';
+import { BUBBLE_SIZE, MINUS_SIZE, NetworkLogItem } from './common';
 import Network from './network';
 import Console from './console';
 import System from './system';
@@ -36,10 +36,14 @@ interface Props {
 const DevTool = ({ children, module, console }: PropsWithChildren<Props>) => {
   const inset = useSafeAreaInsets();
 
-  const [httpLogs, clearHttpLogs] = useNetwork(module?.network !== false);
-  const [consoleLogs, clearConsoleLog] = useConsole(
+  const [httpLogs, setHttpLogs] = React.useState<NetworkLogItem[]>([]);
+  useNetwork(module?.network !== false, setHttpLogs);
+
+  const [consoleLogs, setConsoleLogs] = React.useState([]);
+  useConsole(
     module?.console !== false,
     console?.targets ?? ['log', 'debug', 'trace', 'warn'],
+    setConsoleLogs,
   );
 
   const { width, height } = useWindowDimensions();
@@ -132,17 +136,17 @@ const DevTool = ({ children, module, console }: PropsWithChildren<Props>) => {
       onPanResponderMove: opened
         ? () => undefined
         : Animated.event(
-            [
-              null,
-              {
-                dx: anim.x,
-                dy: anim.y,
-              },
-            ],
+          [
+            null,
             {
-              useNativeDriver: false,
+              dx: anim.x,
+              dy: anim.y,
             },
-          ),
+          ],
+          {
+            useNativeDriver: false,
+          },
+        ),
       onPanResponderRelease: (_, gesture) => {
         const { dx, dy, vx, vy } = gesture;
         if ((Math.abs(dx) < 5 && Math.abs(dy) < 5) || opened) {
@@ -208,7 +212,6 @@ const DevTool = ({ children, module, console }: PropsWithChildren<Props>) => {
       <Animated.View {...panResponder.panHandlers} style={[styles.bubble, { transform: anim.getTranslateTransform() }]}>
         <View style={[styles.bubbleItem, index === 0 ? styles.bubbleItemActive : {}]}>
           <Image source={{ uri: bi }} style={{ width: 40, height: 40, borderRadius: 20, marginLeft: 1.5 }} />
-          {/* @ts-ignore */}
           <NetworkBadge data={httpLogs} show={!opened} />
         </View>
       </Animated.View>
@@ -296,12 +299,11 @@ const DevTool = ({ children, module, console }: PropsWithChildren<Props>) => {
             {index === 2 ? (
               <>
                 {/* @ts-ignore */}
-                <Console data={consoleLogs} onClear={clearConsoleLog} />
+                <Console data={consoleLogs} onClear={() => setConsoleLogs([])} />
               </>
             ) : index === 1 ? (
               <>
-                {/* @ts-ignore */}
-                <Network data={httpLogs} onClear={clearHttpLogs} />
+                <Network data={httpLogs} onClear={() => setHttpLogs([])} />
               </>
             ) : (
               <System />

@@ -8,9 +8,7 @@ const prevData = {
   httpSend: undefined,
 };
 
-const useNetwork = enabled => {
-  const [httpLogs, setHttpLogs] = React.useState([]);
-
+const useNetwork = (enabled, setHttpLogs) => {
   React.useEffect(() => {
     if (!enabled) return undefined;
 
@@ -95,8 +93,6 @@ const useNetwork = enabled => {
       prevData.httpSend = undefined;
     };
   }, [enabled]);
-
-  return [httpLogs, () => setHttpLogs([])];
 };
 
 export default useNetwork;
