@@ -44,9 +44,9 @@ const DevTool = ({ children, module, console }: PropsWithChildren<Props>) => {
   ]);
 
   const [httpLogs, setHttpLogs] = React.useState<NetworkLogItem[]>([]);
-  useNetwork(module?.network !== false, setHttpLogs);
+  useNetwork(module?.network, setHttpLogs);
   useEffect(() => {
-    const enabled = module?.network !== false;
+    const enabled = module?.network;
     setModules(x => {
       const draft = [...x];
       const ix = draft.findIndex(y => y.key === 'network');
@@ -60,12 +60,12 @@ const DevTool = ({ children, module, console }: PropsWithChildren<Props>) => {
       }
       return draft;
     });
-  }, [module?.network !== false]);
+  }, [module?.network]);
 
   const [consoleLogs, setConsoleLogs] = React.useState<ConsoleLogItem[]>([]);
-  useConsole(module?.console !== false, console?.targets ?? ['log', 'debug', 'trace', 'warn'], setConsoleLogs);
+  useConsole(module?.console, console?.targets ?? ['log', 'debug', 'trace', 'warn'], setConsoleLogs);
   useEffect(() => {
-    const enabled = module?.console !== false;
+    const enabled = module?.console;
     setModules(x => {
       const draft = [...x];
       const ix = draft.findIndex(y => y.key === 'console');
@@ -79,7 +79,7 @@ const DevTool = ({ children, module, console }: PropsWithChildren<Props>) => {
       }
       return draft;
     });
-  }, [module?.console !== false]);
+  }, [module?.console]);
 
   const counts: { [key: string]: number } = {
     network: httpLogs.length,
@@ -258,7 +258,7 @@ const DevTool = ({ children, module, console }: PropsWithChildren<Props>) => {
       return <Console data={consoleLogs} onClear={() => setConsoleLogs([])} />;
     }
     return undefined;
-  }, [modules, index]);
+  }, [modules, index, httpLogs, consoleLogs]);
 
   return (
     <>
