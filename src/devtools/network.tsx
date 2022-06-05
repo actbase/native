@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { METHOD_OPTIONS } from './common';
+import { handleCopy, isClipboardEnabled, METHOD_OPTIONS, NETWORK_LOG_BACKGROUND, NetworkLogItem } from './common';
 import styles from './styles';
 
 const FIELDS: { key: string; title: string; render?: () => string }[] = [
@@ -31,8 +31,8 @@ const FIELDS: { key: string; title: string; render?: () => string }[] = [
   },
 ];
 
-const Network = ({ data, onClear }: { data: any[]; onClear: () => void }) => {
-  const [details, setDetails] = useState<{ [key: string]: unknown }>();
+const Network = ({ data, onClear }: { data: NetworkLogItem[]; onClear: () => void }) => {
+  const [details, setDetails] = useState<any>();
   return (
     <View style={{ flex: 1 }}>
       {details && (
@@ -53,23 +53,33 @@ const Network = ({ data, onClear }: { data: any[]; onClear: () => void }) => {
             {FIELDS?.map(field => {
               // eslint-disable-next-line no-nested-ternary
               const text =
-                typeof details[field.key] === 'string'
-                  ? details[field.key]
-                  : JSON.stringify(details[field.key], null, 2);
+                typeof details?.[field.key] === 'string'
+                  ? details?.[field.key]
+                  : JSON.stringify(details?.[field.key], null, 2);
               if (!text) return null;
               return (
                 <View key={field.key} style={{ paddingHorizontal: 10, paddingBottom: 15 }}>
-                  <Text
-                    style={{
-                      fontSize: 11,
-                      color: '#333',
-                      fontWeight: 'bold',
-                      lineHeight: 16,
-                    }}
-                  >
-                    {field.title}
-                  </Text>
-                  <View
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Text
+                      style={{
+                        fontSize: 11,
+                        color: '#333',
+                        fontWeight: 'bold',
+                        lineHeight: 16,
+                      }}
+                    >
+                      {field.title}
+                    </Text>
+                    {isClipboardEnabled && (
+                      <TouchableOpacity onPress={() => handleCopy(text)}>
+                        <Text style={{ fontSize: 12 }}>📄</Text>
+                      </TouchableOpacity>
+                    )}
+                  </View>
+
+                  <TouchableOpacity
+                    onPress={() => handleCopy(text)}
+                    disabled={!isClipboardEnabled}
                     style={{
                       backgroundColor: '#eee',
                       borderRadius: 5,
@@ -79,7 +89,7 @@ const Network = ({ data, onClear }: { data: any[]; onClear: () => void }) => {
                   >
                     {/* @ts-ignore */}
                     <Text style={{ fontSize: 12, color: '#555' }}>{text}</Text>
-                  </View>
+                  </TouchableOpacity>
                 </View>
               );
             })}
@@ -105,10 +115,11 @@ const Network = ({ data, onClear }: { data: any[]; onClear: () => void }) => {
           </View>
         }
         renderItem={({ item }) => {
-          // @ts-ignore
           const opt = METHOD_OPTIONS[item.method];
           const date = new Date();
-          date.setTime(item.time);
+          if (item.time) {
+            date.setTime(item.time);
+          }
 
           const timeStr = [];
           timeStr.push(
@@ -130,13 +141,20 @@ const Network = ({ data, onClear }: { data: any[]; onClear: () => void }) => {
               .padStart(2, '0'),
           );
 
+          const e = String(Math.floor((item.status ?? 0) / 100));
+
           return (
             <TouchableOpacity
               onPress={() => {
                 delete item.obj;
                 setDetails(item);
               }}
-              style={styles.networkItem}
+              style={[
+                styles.networkItem,
+                {
+                  backgroundColor: NETWORK_LOG_BACKGROUND?.[e] ?? '#fff',
+                },
+              ]}
             >
               <View
                 style={[
@@ -149,7 +167,7 @@ const Network = ({ data, onClear }: { data: any[]; onClear: () => void }) => {
                 <Text style={{ fontSize: 10, fontWeight: 'bold', color: '#fff' }} allowFontScaling={false}>
                   {item.method}
                 </Text>
-                <Text style={{ fontSize: 10, fontWeight: 'bold', color: '#fff' }}>{item.status}</Text>
+                <Text style={{ fontSize: 10, fontWeight: 'bold', color: '#fff' }}>{item.status ?? '-'}</Text>
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={{ fontSize: 12, color: '#333' }}>{item.url}</Text>
@@ -161,7 +179,12 @@ const Network = ({ data, onClear }: { data: any[]; onClear: () => void }) => {
                     color: '#777',
                   }}
                 >
-                  {item.finish - item.time}ms - Call to {timeStr?.join(':')}
+                  {item.finish && item.time && (
+                    <>
+                      {(item.finish ?? 0) - (item.time ?? 0)}ms{' - '}
+                    </>
+                  )}
+                  Call to {timeStr?.join(':')}
                 </Text>
               </View>
             </TouchableOpacity>

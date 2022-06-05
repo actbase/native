@@ -61,7 +61,7 @@ const Console = ({ data, onClear }: { data: any[]; onClear: () => void }) => {
             </View>
 
             <Text style={{ fontSize: 12, color: '#555', lineHeight: 16 }}>
-              {typeof item.data === 'string' ? item.data : JSON.stringify(item.data, null, 2)}
+              {item.body}
             </Text>
           </View>
         );

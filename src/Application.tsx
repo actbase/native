@@ -7,7 +7,7 @@ import DevTool from './devtools';
 
 interface Props {
   style?: StyleProp<ViewStyle>;
-  debug?: boolean;
+  debug?: boolean | { network?: boolean; console?: boolean };
 }
 
 const $Providers = () => <></>;
@@ -27,7 +27,7 @@ export const Application = ({ children, style, debug }: PropsWithChildren<Props>
     return el.type?.$$NAME !== Providers?.$$NAME;
   });
 
-  const providers = React.Children.toArray((providerGroup as ReactElement).props.children);
+  const providers = providerGroup ? React.Children.toArray((providerGroup as ReactElement).props.children) : [];
 
   const exports: ReactNode = providers?.reduce?.((el: ReactNode, provider: ReactNode, index: number) => {
     let last: ReactElement = el as ReactElement;
@@ -57,10 +57,10 @@ export const Application = ({ children, style, debug }: PropsWithChildren<Props>
   }
 
   const ToolElement = !debug ? Fragment : DevTool;
-
   return (
     <SafeAreaProvider>
-      <ToolElement>
+      {/* @ts-ignore */}
+      <ToolElement debug={debug}>
         <View style={style}>
           <AbsoluteProvider>{output}</AbsoluteProvider>
         </View>
