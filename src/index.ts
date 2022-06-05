@@ -9,4 +9,6 @@ export { Application, Providers } from './Application';
 //
 // export { RelStyleSheet } from './styling/RelStyleSheet';
 
+export { useDevTools } from './devtools';
+
 export { default as Actbase } from './Actbase';
