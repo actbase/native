@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { READY_STATUS } from './common';
+import { READY_STATUS } from '../common';
 
 const prevData = {
   httpOpen: undefined,
