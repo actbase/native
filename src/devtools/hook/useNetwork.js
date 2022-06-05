@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React from 'react';
 
 import { READY_STATUS } from '../common';
@@ -16,7 +17,6 @@ const useNetwork = enabled => {
     prevData.httpSend = XMLHttpRequest.prototype.send;
     XMLHttpRequest.prototype.send = function send(body) {
       if (body) {
-        // eslint-disable-next-line @typescript-eslint/no-this-alias
         const that = this;
         const { _method, _url } = that;
 
@@ -42,7 +42,6 @@ const useNetwork = enabled => {
         });
       }
 
-      // eslint-disable-next-line prefer-rest-params,no-unused-expressions
       prevData.httpSend?.apply?.(this, arguments);
     };
 
@@ -51,7 +50,6 @@ const useNetwork = enabled => {
       this.addEventListener(
         'readystatechange',
         function readystatechange() {
-          // eslint-disable-next-line @typescript-eslint/no-this-alias
           const that = this;
           const { readyState, status, _method, _url, _response, _headers } = this;
           const success = status === 0 || (status >= 200 && status < 400);
@@ -86,7 +84,6 @@ const useNetwork = enabled => {
         },
         false,
       );
-      // eslint-disable-next-line prefer-rest-params,no-unused-expressions
       prevData.httpOpen?.apply?.(this, arguments);
     };
 

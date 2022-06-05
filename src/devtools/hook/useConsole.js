@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React from 'react';
 
 const prevData = {};
@@ -42,11 +43,8 @@ const useConsole = (enabled, types = ['log']) => {
     if (!enabled) return undefined;
 
     types.forEach(type => {
-      // eslint-disable-next-line no-console
       prevData[type] = console[type];
-      // eslint-disable-next-line no-console
       console[type] = function console() {
-        // eslint-disable-next-line prefer-rest-params
         const body = parseLogs(arguments, 0);
         setConsoleLogs(o => {
           const draft = [...o];
@@ -57,14 +55,12 @@ const useConsole = (enabled, types = ['log']) => {
           });
           return draft;
         });
-        // eslint-disable-next-line no-unused-expressions,prefer-rest-params
         prevData[type].apply?.(this, arguments);
       };
     });
 
     return () => {
       types.forEach(type => {
-        // eslint-disable-next-line no-console
         console[type] = prevData[type];
         prevData[type] = undefined;
       });

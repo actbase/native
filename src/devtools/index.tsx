@@ -30,9 +30,7 @@ interface Props {
 const DevTool = ({ children, debug }: PropsWithChildren<Props>) => {
   const inset = useSafeAreaInsets();
 
-  // eslint-disable-next-line react/prop-types
   const [httpLogs, clearHttpLogs] = useNetwork(debug?.network !== false);
-  // eslint-disable-next-line react/prop-types
   const [consoleLogs, clearConsoleLog] = useConsole(debug?.console !== false, ['log', 'debug', 'trace', 'warn']);
 
   const { width, height } = useWindowDimensions();
