@@ -1,27 +1,272 @@
-import React from 'react';
-import { FlatList, Text, View } from 'react-native';
+import React, { useMemo } from 'react';
+import { NativeModules, Platform, SectionList, Text, View, TouchableOpacity } from 'react-native';
 
 import styles from './styles';
+import { handleCopy, isClipboardEnabled } from './common';
 
-const System = () => {
+// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+// @ts-ignore
+const constants = Platform.constants ?? {};
+const { RNDeviceInfo } = NativeModules;
+
+function formatBytes(bytes: number, decimals = 2) {
+  if (bytes === 0) return '0 Bytes';
+
+  const k = 1024;
+  const dm = decimals < 0 ? 0 : decimals;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+  // eslint-disable-next-line no-restricted-properties
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+}
+
+interface DataItemButton {
+  title: string;
+  onPress: () => void;
+}
+
+interface DataItem {
+  title: string;
+  value?: string;
+  onPress?: () => void;
+  buttons?: DataItemButton[];
+}
+
+interface SectionDataItem {
+  key: string;
+  title: string;
+  data: DataItem[];
+}
+
+const originSections: SectionDataItem[] = [
+  {
+    key: 'info',
+    title: 'System Info',
+    data: [
+      {
+        title: 'Platform',
+        value: Platform.OS,
+      },
+      {
+        title: 'OS Version',
+        value: Platform.Version,
+      },
+      constants && {
+        title: 'React-Native',
+        value: `${constants?.reactNativeVersion?.major}.${constants?.reactNativeVersion?.minor}.${constants?.reactNativeVersion.patch}`,
+      },
+      RNDeviceInfo &&
+        RNDeviceInfo.brand && {
+          title: 'Brand',
+          value: RNDeviceInfo.brand,
+        },
+      RNDeviceInfo &&
+        RNDeviceInfo.model && {
+          title: 'Model',
+          value: RNDeviceInfo.model,
+        },
+      RNDeviceInfo &&
+        RNDeviceInfo.deviceId && {
+          title: 'Device ID',
+          value: RNDeviceInfo.deviceId,
+        },
+    ].filter(v => !!v),
+  },
+  {
+    key: 'var',
+    title: 'Variants',
+    data: [],
+  },
+  {
+    key: 'cmd',
+    title: 'Command',
+    data: [],
+  },
+];
+
+const System = ({ variants }: { variants?: { [key: string]: unknown } }) => {
+  const sections = useMemo(() => {
+    const o = [...originSections];
+
+    if (Platform.OS === 'android' && RNDeviceInfo && RNDeviceInfo.getDeviceNameSync) {
+      o[0].data.push({
+        title: 'Device Name',
+        value: RNDeviceInfo.getDeviceNameSync(),
+      });
+    }
+
+    if (Platform.OS === 'android' && RNDeviceInfo && RNDeviceInfo.getMacAddressSync) {
+      o[0].data.push({
+        title: 'MAC Address',
+        value: RNDeviceInfo.getMacAddressSync(),
+      });
+    }
+
+    if (RNDeviceInfo && RNDeviceInfo.getIpAddressSync) {
+      o[0].data.push({
+        title: 'IP Address',
+        value: RNDeviceInfo.getIpAddressSync(),
+      });
+    }
+
+    if (RNDeviceInfo && RNDeviceInfo.getUsedMemorySync) {
+      o[0].data.push({
+        title: 'Used Memory',
+        value: formatBytes(RNDeviceInfo.getUsedMemorySync()),
+      });
+    }
+
+    if (RNDeviceInfo && RNDeviceInfo.getTotalMemorySync) {
+      o[0].data.push({
+        title: 'Total Memory',
+        value: formatBytes(RNDeviceInfo.getTotalMemorySync()),
+      });
+    }
+
+    if (RNDeviceInfo && RNDeviceInfo.getFreeDiskStorageSync) {
+      o[0].data.push({
+        title: 'Free Disk Space',
+        value: formatBytes(RNDeviceInfo.getFreeDiskStorageSync()),
+      });
+    }
+
+    const keys = Object.keys(variants ?? {});
+    if (keys.length === 0) {
+      o.splice(1, 1);
+    } else if (variants) {
+      o[1].data = keys.reduce((a: DataItem[], b) => {
+        a.push({
+          title: b,
+          value: String(variants[b]),
+        });
+        return a;
+      }, []);
+    }
+
+    const ix = o.findIndex(x => x.key === 'cmd');
+    if (NativeModules.DevSettings) {
+      o[ix].data.push({
+        title: 'Reload',
+        onPress: () => {
+          NativeModules.DevSettings.reload();
+        },
+      });
+    }
+
+    if (NativeModules.RNExitApp) {
+      o[ix].data.push({
+        title: 'Exit',
+        onPress: () => {
+          NativeModules.RNExitApp.exitApp();
+        },
+      });
+    }
+
+    if (o[ix].data.length === 0) {
+      o.splice(ix, 1);
+    }
+
+    return o;
+  }, [variants]);
+
   return (
-    <FlatList
-      data={[]}
+    <SectionList
+      sections={sections}
       contentContainerStyle={{ flexGrow: 1 }}
-      ListEmptyComponent={
-        <View style={styles.noItem}>
-          <Text style={styles.noItemText}>Require to DeviceInfo</Text>
-        </View>
-      }
       ListHeaderComponent={
         <View style={styles.header}>
           <Text style={styles.headerTitle}>System</Text>
         </View>
       }
-      renderItem={() => <View style={{}} />}
+      renderSectionHeader={({ section }) => {
+        return (
+          <View
+            style={{
+              backgroundColor: 'rgba(255,255,255,0.7)',
+              paddingVertical: 5,
+              alignItems: 'flex-start',
+              paddingHorizontal: 8,
+              borderBottomWidth: 1,
+              borderBottomColor: '#eee',
+            }}
+          >
+            <View
+              style={{
+                backgroundColor: '#aaa',
+                borderRadius: 2,
+                height: 15,
+                alignItems: 'center',
+                justifyContent: 'center',
+                paddingHorizontal: 5,
+              }}
+            >
+              <Text style={{ fontSize: 11, fontWeight: 'bold', color: '#fff' }}>{section.title}</Text>
+            </View>
+          </View>
+        );
+      }}
+      renderItem={({ item }) => {
+        return (
+          <TouchableOpacity
+            disabled={!item.onPress}
+            onPress={item.onPress}
+            style={{
+              flexDirection: 'row',
+              paddingHorizontal: 10,
+              paddingVertical: 8,
+              borderBottomWidth: 1,
+              borderBottomColor: '#eee',
+            }}
+          >
+            <View style={{ width: 100 }}>
+              <Text style={{ fontSize: 11, lineHeight: 16, fontWeight: 'bold', color: '#333' }}>{item.title}</Text>
+            </View>
+            {item.value !== undefined && (
+              <>
+                <View style={{ flex: 1 }}>
+                  <Text style={{ fontSize: 12, lineHeight: 16, color: '#555' }}>{item.value}</Text>
+                </View>
+                {isClipboardEnabled && item.value !== undefined && (
+                  <TouchableOpacity onPress={() => handleCopy(item.value ?? '')}>
+                    <Text style={{ fontSize: 12 }}>📄</Text>
+                  </TouchableOpacity>
+                )}
+              </>
+            )}
+            {item.buttons !== undefined && (
+              <View style={{ flex: 1, justifyContent: 'flex-end', flexDirection: 'row' }}>
+                {item.buttons?.map(button => (
+                  <TouchableOpacity
+                    style={{
+                      marginLeft: 5,
+                      borderWidth: 1,
+                      borderColor: '#eee',
+                      borderRadius: 4,
+                      paddingHorizontal: 8,
+                      backgroundColor: '#eee',
+                      minWidth: 50,
+                      minHeight: 20,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Text style={{ lineHeight: 16, fontSize: 11 }}>{button.title}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            )}
+          </TouchableOpacity>
+        );
+      }}
       style={{ flex: 1 }}
     />
   );
+};
+
+System.defaultProps = {
+  variants: {},
 };
 
 export default System;

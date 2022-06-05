@@ -105,9 +105,9 @@ const DevTool = ({ children, module, console }: PropsWithChildren<Props>) => {
   };
 
   const { width, height } = useWindowDimensions();
-  const [index, setIndex] = useState(-1);
+  const [index, setIndex] = useState(0);
   const [left, setLeft] = useState(true);
-  const opened = index >= 0;
+  const [opened, setOpened] = useState(false);
 
   const buffer = useRef({ x: MINUS_SIZE, y: inset.top + MINUS_SIZE });
   const anim = useRef(new Animated.ValueXY({ ...buffer.current })).current;
@@ -143,7 +143,7 @@ const DevTool = ({ children, module, console }: PropsWithChildren<Props>) => {
         useNativeDriver: false,
       }),
     ]).start();
-    setIndex(-1);
+    setOpened(false);
   };
 
   const panResponder = useMemo(() => {
@@ -179,8 +179,10 @@ const DevTool = ({ children, module, console }: PropsWithChildren<Props>) => {
             }),
           ]).start();
         }
+      } else {
+        setIndex(0);
       }
-      setIndex(0);
+      setOpened(true);
     };
 
     return PanResponder.create({
@@ -285,7 +287,7 @@ const DevTool = ({ children, module, console }: PropsWithChildren<Props>) => {
     <>
       {children}
       <Animated.View {...panResponder.panHandlers} style={[styles.bubble, { transform: anim.getTranslateTransform() }]}>
-        <View style={[styles.bubbleItem, index === 0 ? styles.bubbleItemActive : {}]}>
+        <View style={[styles.bubbleItem, opened && index === 0 ? styles.bubbleItemActive : {}]}>
           <Image source={{ uri: bi }} style={{ width: 40, height: 40, borderRadius: 20, marginLeft: 1.5 }} />
           <NetworkBadge data={httpLogs} show={!opened} />
         </View>
