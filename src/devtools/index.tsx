@@ -7,7 +7,7 @@ const INIT_OPTIONS = {
   module: { console: true, network: true },
 };
 
-const DevContext = React.createContext<DevToolContext>({
+export const DevContext = React.createContext<DevToolContext>({
   options: INIT_OPTIONS,
 });
 

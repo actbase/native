@@ -134,6 +134,30 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#fff',
   },
+  systemSectionHeader: {
+    backgroundColor: 'rgba(255,255,255,0.7)',
+    paddingVertical: 5,
+    alignItems: 'flex-start',
+    paddingHorizontal: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
+  systemSectionBadge: {
+    backgroundColor: '#aaa',
+    borderRadius: 2,
+    height: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 5,
+  },
+  systemSectionItem: {
+    flexDirection: 'row',
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
+  systemSectionItemFoot: { paddingVertical: 2, justifyContent: 'space-between', alignItems: 'center' },
 });
 
 export default styles;

@@ -1,8 +1,9 @@
 import React, { useMemo } from 'react';
-import { NativeModules, Platform, SectionList, Text, View, TouchableOpacity } from 'react-native';
+import { NativeModules, Platform, SectionList, Text, View, TouchableOpacity, Switch } from 'react-native';
 
 import styles from './styles';
 import { handleCopy, isClipboardEnabled } from './common';
+import { DevContext } from './index';
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore
@@ -87,6 +88,8 @@ const originSections: SectionDataItem[] = [
 ];
 
 const System = ({ variants }: { variants?: { [key: string]: unknown } }) => {
+  const { options, setOptions } = React.useContext(DevContext);
+
   const sections = useMemo(() => {
     const o = JSON.parse(JSON.stringify(originSections));
 
@@ -222,28 +225,64 @@ const System = ({ variants }: { variants?: { [key: string]: unknown } }) => {
           <Text style={styles.headerTitle}>System</Text>
         </View>
       }
-      renderSectionHeader={({ section }) => {
-        return (
-          <View
-            style={{
-              backgroundColor: 'rgba(255,255,255,0.7)',
-              paddingVertical: 5,
-              alignItems: 'flex-start',
-              paddingHorizontal: 8,
-              borderBottomWidth: 1,
-              borderBottomColor: '#eee',
+      ListFooterComponent={
+        <View>
+          <View style={styles.systemSectionHeader}>
+            <View style={styles.systemSectionBadge}>
+              <Text style={{ fontSize: 11, fontWeight: 'bold', color: '#fff' }}>Monitor</Text>
+            </View>
+          </View>
+          <TouchableOpacity
+            style={[styles.systemSectionItem, styles.systemSectionItemFoot]}
+            disabled={!setOptions}
+            onPress={() => {
+              if (!setOptions) return;
+              const o = { ...options, module: { ...options.module } };
+              o.module.network = !o.module?.network;
+              setOptions(o);
             }}
           >
-            <View
-              style={{
-                backgroundColor: '#aaa',
-                borderRadius: 2,
-                height: 15,
-                alignItems: 'center',
-                justifyContent: 'center',
-                paddingHorizontal: 5,
+            <Text style={{ fontSize: 11, lineHeight: 16, fontWeight: 'bold', color: '#333' }}>Network</Text>
+            <Switch
+              value={options.module?.network}
+              disabled={!setOptions}
+              onValueChange={value => {
+                if (!setOptions) return;
+                const o = { ...options, module: { ...options.module } };
+                o.module.network = value;
+                setOptions(o);
               }}
-            >
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.systemSectionItem, styles.systemSectionItemFoot]}
+            disabled={!setOptions}
+            onPress={() => {
+              if (!setOptions) return;
+              const o = { ...options, module: { ...options.module } };
+              o.module.console = !o.module?.console;
+              setOptions(o);
+            }}
+          >
+            <Text style={{ fontSize: 11, lineHeight: 16, fontWeight: 'bold', color: '#333' }}>Console</Text>
+            <Switch
+              value={options.module?.console}
+              disabled={!setOptions}
+              onValueChange={value => {
+                if (!setOptions) return;
+                const o = { ...options, module: { ...options.module } };
+                o.module.console = value;
+                setOptions(o);
+              }}
+            />
+          </TouchableOpacity>
+        </View>
+      }
+      renderSectionHeader={({ section }) => {
+        return (
+          <View style={styles.systemSectionHeader}>
+            <View style={styles.systemSectionBadge}>
               <Text style={{ fontSize: 11, fontWeight: 'bold', color: '#fff' }}>{section.title}</Text>
             </View>
           </View>
@@ -251,17 +290,7 @@ const System = ({ variants }: { variants?: { [key: string]: unknown } }) => {
       }}
       renderItem={({ item }) => {
         return (
-          <TouchableOpacity
-            disabled={!item.onPress}
-            onPress={item.onPress}
-            style={{
-              flexDirection: 'row',
-              paddingHorizontal: 10,
-              paddingVertical: 8,
-              borderBottomWidth: 1,
-              borderBottomColor: '#eee',
-            }}
-          >
+          <TouchableOpacity disabled={!item.onPress} onPress={item.onPress} style={styles.systemSectionItem}>
             <View style={{ width: 100 }}>
               <Text style={{ fontSize: 11, lineHeight: 16, fontWeight: 'bold', color: '#333' }}>{item.title}</Text>
             </View>

@@ -18,6 +18,8 @@ const useNetwork = (enabled, setHttpLogs) => {
         const that = this;
         const { _method, _url } = that;
 
+        if (_url.endsWith('/symbolicate') && _url.startsWith('http://localhost') && _method === 'POST') return;
+
         setHttpLogs(o => {
           const draft = [...o];
           if (draft.length > 100) {
@@ -51,6 +53,8 @@ const useNetwork = (enabled, setHttpLogs) => {
           const that = this;
           const { readyState, status, _method, _url, _response, _headers } = this;
           const success = status === 0 || (status >= 200 && status < 400);
+
+          if (_url.endsWith('/symbolicate') && _url.startsWith('http://localhost') && _method === 'POST') return;
 
           setHttpLogs(o => {
             const draft = [...o];
