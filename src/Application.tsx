@@ -68,3 +68,8 @@ export const Application = ({ children, style, debug, reduxStore }: PropsWithChi
     </SafeAreaProvider>
   );
 };
+
+Application.defaultProps = {
+  debug: __DEV__,
+  style: { flex: 1 },
+};

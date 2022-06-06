@@ -59,10 +59,12 @@ export interface DevToolOptions {
     targets?: LogMethod[];
   };
   redux?: ReduxStore;
+  navigation?: ReactNavRef;
 }
 
 export interface DevToolHooks {
   showTools?: () => void;
+  setNavigation?: (navRef: ReactNavRef) => void;
 }
 
 export interface DevToolContext extends DevToolHooks {
@@ -92,6 +94,13 @@ export interface ConsoleLogItem {
 
 export interface ReduxStore {
   getState: () => { [key: string]: unknown };
+}
+
+export interface ReactNavRef {
+  current: {
+    dangerouslyGetState?: () => { [key: string]: unknown };
+    getRootState?: () => { [key: string]: unknown };
+  };
 }
 
 export type RowData = {
