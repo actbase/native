@@ -1,7 +1,7 @@
 import React, { Fragment, PropsWithChildren, useEffect, useMemo, useState } from 'react';
 
 import Tools from './tools';
-import { DevToolContext, DevToolHooks, DevToolOptions } from './common';
+import { DevToolContext, DevToolHooks, DevToolOptions, ReduxStore } from './common';
 
 const INIT_OPTIONS = {
   module: { console: true, network: true },
@@ -20,11 +20,13 @@ export const useDevTools = (): DevToolHooks => {
 
 interface Props {
   debug?: boolean | { network?: boolean; console?: boolean };
+  reduxStore?: ReduxStore;
 }
 
-const DevTools = ({ debug, children }: PropsWithChildren<Props>) => {
+const DevTools = ({ debug, children, reduxStore }: PropsWithChildren<Props>) => {
   const [disabled, setDisabled] = useState(!debug);
   const [options, setOptions] = useState<DevToolOptions>(INIT_OPTIONS);
+  const [redux, setRedux] = useState<ReduxStore | undefined>(reduxStore);
 
   useEffect(() => {
     if (debug && !(typeof debug === 'boolean')) {
@@ -41,9 +43,13 @@ const DevTools = ({ debug, children }: PropsWithChildren<Props>) => {
     return undefined;
   }, [debug]);
 
+  useEffect(() => {
+    setRedux(reduxStore);
+  }, [reduxStore]);
+
   const [ToolElement, toolProps] = useMemo(() => {
     const e = disabled ? Fragment : Tools;
-    return [e, !disabled ? options : {}];
+    return [e, !disabled ? { ...options, redux } : {}];
   }, [disabled, options]);
 
   return (

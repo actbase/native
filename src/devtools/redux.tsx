@@ -1,51 +1,27 @@
 import React, { useEffect, useState } from 'react';
-import { FlatList, NativeModules, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, Text, TouchableOpacity, View } from 'react-native';
 
 import styles from './styles';
-import { handleCopy, isClipboardEnabled, RowData } from './common';
+import { handleCopy, isClipboardEnabled, ReduxStore, RowData } from './common';
 
-const RCTAsyncStorage =
-  NativeModules.PlatformLocalStorage || // Support for external modules, like react-native-windows
-  NativeModules.RNC_AsyncSQLiteDBStorage ||
-  NativeModules.RNCAsyncStorage;
-
-export const isAsyncStorage = () => {
-  return !!RCTAsyncStorage;
-};
-
-export type ErrorLike = {
-  message: string;
-  key: string;
-};
-
-const AsyncStorage = () => {
-  const [err, setErr] = useState<string | undefined>();
+const Redux = ({ store }: { store: ReduxStore | undefined }) => {
   const [data, setData] = useState<RowData[]>([]);
   const [openeds, setOpeneds] = useState<string[]>([]);
 
   useEffect(() => {
-    RCTAsyncStorage.getAllKeys((error: ErrorLike, keys: any) => {
-      if (error) {
-        setErr(error.message);
-        return;
-      }
-      RCTAsyncStorage.multiGet(keys, (errors: Error[], result: any) => {
-        if (errors?.length > 0) {
-          setErr(errors?.map(v => v.message).join('\n'));
-          return;
-        }
-        setData(
-          result?.reduce((a: RowData[], v: string[]) => {
-            a.push({
-              key: v[0],
-              value: v[1],
-            });
-            return a;
-          }, []),
-        );
-      });
-    });
-  }, []);
+    if (!store) return;
+    const v = store.getState();
+    setData(
+      Object.keys(v || {}).reduce((a: RowData[], key) => {
+        const rowData: RowData = {
+          key,
+          value: JSON.stringify(v[key], null, 2),
+        };
+        a.push(rowData);
+        return a;
+      }, []),
+    );
+  }, [store]);
 
   return (
     <FlatList
@@ -53,12 +29,12 @@ const AsyncStorage = () => {
       contentContainerStyle={{ flexGrow: 1 }}
       ListEmptyComponent={
         <View style={styles.noItem}>
-          {!err ? <Text style={styles.noItemText}>Not found Data</Text> : <Text style={styles.noItemText}>{err}</Text>}
+          <Text style={styles.noItemText}>Not found Data</Text>
         </View>
       }
       ListHeaderComponent={
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>Async Storage</Text>
+          <Text style={styles.headerTitle}>Redux Store</Text>
         </View>
       }
       renderItem={({ item }) => {
@@ -127,4 +103,4 @@ const AsyncStorage = () => {
   );
 };
 
-export default AsyncStorage;
+export default Redux;

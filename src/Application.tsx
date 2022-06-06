@@ -4,10 +4,12 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AbsoluteProvider } from '@actbase/react-absolute';
 
 import DevTool from './devtools';
+import { ReduxStore } from './devtools/common';
 
 interface Props {
   style?: StyleProp<ViewStyle>;
   debug?: boolean | { network?: boolean; console?: boolean };
+  reduxStore?: ReduxStore;
 }
 
 const $Providers = () => <></>;
@@ -17,7 +19,7 @@ export const Providers = $Providers;
 
 type ElementOf = React.ReactNode & { type?: { $$NAME?: string } };
 
-export const Application = ({ children, style, debug }: PropsWithChildren<Props>) => {
+export const Application = ({ children, style, debug, reduxStore }: PropsWithChildren<Props>) => {
   const oChildren: ElementOf[] = React.Children.toArray(children) as ElementOf[];
   const providerGroup: React.ReactNode = oChildren?.find((el: ElementOf) => {
     return el.type?.$$NAME === Providers?.$$NAME;
@@ -58,7 +60,7 @@ export const Application = ({ children, style, debug }: PropsWithChildren<Props>
 
   return (
     <SafeAreaProvider>
-      <DevTool debug={debug}>
+      <DevTool debug={debug} reduxStore={reduxStore}>
         <View style={style}>
           <AbsoluteProvider>{output}</AbsoluteProvider>
         </View>

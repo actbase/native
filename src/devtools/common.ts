@@ -58,6 +58,7 @@ export interface DevToolOptions {
   console?: {
     targets?: LogMethod[];
   };
+  redux?: ReduxStore;
 }
 
 export interface DevToolHooks {
@@ -88,3 +89,12 @@ export interface ConsoleLogItem {
   body: string;
   time: number;
 }
+
+export interface ReduxStore {
+  getState: () => { [key: string]: unknown };
+}
+
+export type RowData = {
+  key: string;
+  value: string;
+};
