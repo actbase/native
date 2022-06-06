@@ -48,6 +48,26 @@ export const handleCopy: (str: string) => void = (str: string) => {
 };
 
 export type NetworkMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
+export type LogMethod = 'log' | 'debug' | 'trace' | 'warn';
+
+export interface DevToolOptions {
+  module?: {
+    console?: boolean;
+    network?: boolean;
+  };
+  console?: {
+    targets?: LogMethod[];
+  };
+}
+
+export interface DevToolHooks {
+  showTools?: () => void;
+}
+
+export interface DevToolContext extends DevToolHooks {
+  options: DevToolOptions;
+  setOptions?: (options: DevToolOptions) => void;
+}
 
 export interface NetworkLogItem {
   method: NetworkMethod;
