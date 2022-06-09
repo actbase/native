@@ -16,6 +16,7 @@ export const useDevTools = (): DevToolHooks => {
   return {
     showTools: o.showTools,
     setNavigation: o.setNavigation,
+    setVariants: o.setVariants,
   };
 };
 
@@ -28,6 +29,7 @@ const DevTools = ({ debug, children, reduxStore }: PropsWithChildren<Props>) => 
   const [disabled, setDisabled] = useState(!debug);
   const [options, setOptions] = useState<DevToolOptions>(INIT_OPTIONS);
   const [redux, setRedux] = useState<ReduxStore | undefined>(reduxStore);
+  const [variants, setVariants] = useState({});
   const [navigation, setNavigation] = useState<ReactNavRef | undefined>(undefined);
 
   useEffect(() => {
@@ -51,8 +53,8 @@ const DevTools = ({ debug, children, reduxStore }: PropsWithChildren<Props>) => 
 
   const [ToolElement, toolProps] = useMemo(() => {
     const e = disabled ? Fragment : Tools;
-    return [e, !disabled ? { ...options, redux, navigation } : {}];
-  }, [disabled, options, navigation]);
+    return [e, !disabled ? { ...options, redux, navigation, variants } : {}];
+  }, [disabled, options, navigation, variants]);
 
   return (
     <DevContext.Provider
@@ -61,6 +63,9 @@ const DevTools = ({ debug, children, reduxStore }: PropsWithChildren<Props>) => 
         options,
         setOptions,
         setNavigation,
+        setVariants: o => {
+          setVariants(x => ({ ...x, ...o }));
+        },
       }}
     >
       <ToolElement {...toolProps}>{children}</ToolElement>

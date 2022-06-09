@@ -60,11 +60,15 @@ export interface DevToolOptions {
   };
   redux?: ReduxStore;
   navigation?: ReactNavRef;
+  variants?: {
+    [key: string]: unknown;
+  };
 }
 
 export interface DevToolHooks {
   showTools?: () => void;
   setNavigation?: (navRef: ReactNavRef) => void;
+  setVariants?: (data: { [key: string]: unknown }) => void;
 }
 
 export interface DevToolContext extends DevToolHooks {
