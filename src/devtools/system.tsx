@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { NativeModules, Platform, SectionList, Text, View, TouchableOpacity, Switch } from 'react-native';
+import { NativeModules, Platform, SectionList, Text, View, TouchableOpacity } from 'react-native';
 
 import styles from './styles';
 import { handleCopy, isClipboardEnabled } from './common';
@@ -86,6 +86,10 @@ const originSections: SectionDataItem[] = [
     data: [],
   },
 ];
+
+const Switch = ({ value }: { value: boolean }) => {
+  return <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: value ? '#0f0' : '#ccc' }} />;
+};
 
 const System = ({ variants }: { variants?: { [key: string]: unknown } }) => {
   const { options, setOptions } = React.useContext(DevContext);
@@ -243,16 +247,7 @@ const System = ({ variants }: { variants?: { [key: string]: unknown } }) => {
             }}
           >
             <Text style={{ fontSize: 11, lineHeight: 16, fontWeight: 'bold', color: '#333' }}>Network</Text>
-            <Switch
-              value={options.module?.network}
-              disabled={!setOptions}
-              onValueChange={value => {
-                if (!setOptions) return;
-                const o = { ...options, module: { ...options.module } };
-                o.module.network = value;
-                setOptions(o);
-              }}
-            />
+            <Switch value={!!options.module?.network} />
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -266,16 +261,7 @@ const System = ({ variants }: { variants?: { [key: string]: unknown } }) => {
             }}
           >
             <Text style={{ fontSize: 11, lineHeight: 16, fontWeight: 'bold', color: '#333' }}>Console</Text>
-            <Switch
-              value={options.module?.console}
-              disabled={!setOptions}
-              onValueChange={value => {
-                if (!setOptions) return;
-                const o = { ...options, module: { ...options.module } };
-                o.module.console = value;
-                setOptions(o);
-              }}
-            />
+            <Switch value={!!options.module?.console} />
           </TouchableOpacity>
         </View>
       }

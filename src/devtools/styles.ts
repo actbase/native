@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
   },
   systemSectionHeader: {
     backgroundColor: 'rgba(255,255,255,0.7)',
-    paddingVertical: 5,
+    paddingVertical: 8,
     alignItems: 'flex-start',
     paddingHorizontal: 10,
     borderBottomWidth: 1,
@@ -156,6 +156,8 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderBottomWidth: 1,
     borderBottomColor: '#eee',
+    minHeight: 40,
+    alignItems: 'center',
   },
   systemSectionItemFoot: { paddingVertical: 2, justifyContent: 'space-between', alignItems: 'center' },
   navigationItem: {
