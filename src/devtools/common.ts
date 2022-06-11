@@ -104,6 +104,8 @@ export interface ReactNavRef {
   current: {
     dangerouslyGetState?: () => { [key: string]: unknown };
     getRootState?: () => RNavRouteData;
+    getCurrentRoute?: () => { key: string };
+    navigate?: (name: string) => void;
   };
 }
 
