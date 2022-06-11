@@ -158,6 +158,22 @@ const styles = StyleSheet.create({
     borderBottomColor: '#eee',
   },
   systemSectionItemFoot: { paddingVertical: 2, justifyContent: 'space-between', alignItems: 'center' },
+  navigationItem: {
+    flexDirection: 'row',
+    minHeight: 40,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#fff',
+  },
+  navigationText: {
+    flex: 1,
+    fontSize: 14,
+  },
+  navigationChild: { paddingLeft: 10, backgroundColor: '#eee' },
 });
 
 export default styles;

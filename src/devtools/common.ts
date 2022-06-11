@@ -103,8 +103,28 @@ export interface ReduxStore {
 export interface ReactNavRef {
   current: {
     dangerouslyGetState?: () => { [key: string]: unknown };
-    getRootState?: () => { [key: string]: unknown };
+    getRootState?: () => RNavRouteData;
   };
+}
+
+export interface RNavRouteItem {
+  key?: string;
+  name: string;
+  state: RNavRouteData;
+}
+
+export interface RNavRouteData {
+  routeNames: string[];
+  routes?: RNavRouteItem[];
+
+  [key: string]: unknown;
+}
+
+export interface NavData {
+  key?: string;
+  name: string;
+  data?: string;
+  items?: NavData[];
 }
 
 export type RowData = {

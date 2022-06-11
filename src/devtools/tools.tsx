@@ -320,7 +320,7 @@ const Tools = ({ children, module, console, redux, navigation, variants }: Props
       return <System variants={variants} />;
     }
     if (mod?.key === 'astorage') {
-      return <AsyncStorage />;
+      return <AsyncStorage opened={opened} />;
     }
     if (mod?.key === 'network') {
       return <Network data={httpLogs} onClear={() => setHttpLogs([])} />;
@@ -329,13 +329,13 @@ const Tools = ({ children, module, console, redux, navigation, variants }: Props
       return <Console data={consoleLogs} onClear={() => setConsoleLogs([])} />;
     }
     if (mod?.key === 'redux') {
-      return <Redux store={redux} />;
+      return <Redux store={redux} opened={opened}  />;
     }
     if (mod?.key === 'navigation') {
-      return <Navigation navigation={navigation} />;
+      return <Navigation navigation={navigation} opened={opened} />;
     }
     return undefined;
-  }, [modules, index, httpLogs, consoleLogs, redux, navigation]);
+  }, [modules, index, httpLogs, consoleLogs, redux, navigation, opened]);
 
   return (
     <>

@@ -4,12 +4,12 @@ import { FlatList, Text, TouchableOpacity, View } from 'react-native';
 import styles from './styles';
 import { handleCopy, isClipboardEnabled, ReduxStore, RowData } from './common';
 
-const Redux = ({ store }: { store: ReduxStore | undefined }) => {
+const Redux = ({ store, opened }: { opened: boolean; store: ReduxStore | undefined }) => {
   const [data, setData] = useState<RowData[]>([]);
   const [openeds, setOpeneds] = useState<string[]>([]);
 
   useEffect(() => {
-    if (!store) return;
+    if (!store || !opened) return;
     const v = store.getState();
     setData(
       Object.keys(v || {}).reduce((a: RowData[], key) => {
@@ -21,7 +21,7 @@ const Redux = ({ store }: { store: ReduxStore | undefined }) => {
         return a;
       }, []),
     );
-  }, [store]);
+  }, [store, opened]);
 
   return (
     <FlatList

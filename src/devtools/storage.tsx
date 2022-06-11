@@ -18,12 +18,13 @@ export type ErrorLike = {
   key: string;
 };
 
-const AsyncStorage = () => {
+const AsyncStorage = ({ opened }: { opened: boolean }) => {
   const [err, setErr] = useState<string | undefined>();
   const [data, setData] = useState<RowData[]>([]);
   const [openeds, setOpeneds] = useState<string[]>([]);
 
   useEffect(() => {
+    if (!opened) return;
     RCTAsyncStorage.getAllKeys((error: ErrorLike, keys: any) => {
       if (error) {
         setErr(error.message);
@@ -45,7 +46,7 @@ const AsyncStorage = () => {
         );
       });
     });
-  }, []);
+  }, [opened]);
 
   return (
     <FlatList
