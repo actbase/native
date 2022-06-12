@@ -73,4 +73,4 @@ const DevTools = ({ debug, children, reduxStore }: PropsWithChildren<Props>) => 
   );
 };
 
-export default DevTools;
+export default React.memo(DevTools);

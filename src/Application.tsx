@@ -15,18 +15,16 @@ interface Props {
 const $Providers = () => <></>;
 $Providers.$$NAME = '__@@ABX_PROVID@@';
 
-export const Providers = $Providers;
-
 type ElementOf = React.ReactNode & { type?: { $$NAME?: string } };
 
-export const Application = ({ children, style, debug, reduxStore }: PropsWithChildren<Props>) => {
+const AppElement = ({ children, style, debug, reduxStore }: PropsWithChildren<Props>) => {
   const oChildren: ElementOf[] = React.Children.toArray(children) as ElementOf[];
   const providerGroup: React.ReactNode = oChildren?.find((el: ElementOf) => {
-    return el.type?.$$NAME === Providers?.$$NAME;
+    return el.type?.$$NAME === $Providers?.$$NAME;
   });
 
   const bodies: React.ReactNode[] = oChildren?.filter((el: ElementOf) => {
-    return el.type?.$$NAME !== Providers?.$$NAME;
+    return el.type?.$$NAME !== $Providers?.$$NAME;
   });
 
   const providers = providerGroup ? React.Children.toArray((providerGroup as ReactElement).props.children) : [];
@@ -69,7 +67,10 @@ export const Application = ({ children, style, debug, reduxStore }: PropsWithChi
   );
 };
 
-Application.defaultProps = {
+AppElement.defaultProps = {
   debug: __DEV__,
   style: { flex: 1 },
 };
+
+export const Providers = $Providers;
+export const Application = React.memo(AppElement);
