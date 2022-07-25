@@ -99,6 +99,7 @@ const Network = ({ data, onClear }: { data: NetworkLogItem[]; onClear: () => voi
       <FlatList
         data={data}
         contentContainerStyle={{ flexGrow: 1 }}
+        keyExtractor={(_, index) => `${index}`}
         ListEmptyComponent={
           <View style={styles.noItem}>
             <Text style={styles.noItemText}>Not found Network Log</Text>

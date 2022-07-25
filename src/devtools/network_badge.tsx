@@ -51,11 +51,12 @@ const NetworkBadge = ({ data, show }: { data: NetworkLogItem[]; show: boolean })
       ]}
     >
       <View style={{ flexDirection: 'row', marginTop: 4 }}>
-        {items.map(({ state }) =>
+        {items.map(({ state, time }) =>
           !state ? (
             undefined
           ) : (
             <View
+              key={`${time}`}
               style={{
                 backgroundColor: BACKGROUND_FOR_STATE?.[state],
                 width: 4,

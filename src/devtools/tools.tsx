@@ -343,6 +343,7 @@ const Tools = ({ children, module, console, redux, navigation, variants }: Props
   }, [left]);
 
   const renderScreen = useCallback(() => {
+    if (!opened) return null;
     const mod = modules[index];
     if (mod?.key === 'home') {
       return <System variants={variants} />;
